@@ -1,0 +1,65 @@
+/* Reset básico e definição de fonte */
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f0f0f0;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Cabeçalho */
+  header {
+    background: #333;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  h1 {
+    margin: 0;
+    font-size: 2.5em;
+  }
+  
+  /* Conteúdo principal */
+  main {
+    padding: 20px;
+  }
+  
+  /* Área do puzzle (grade) */
+  #puzzle {
+    display: grid;
+    grid-template-columns: repeat(10, 40px); /* 10 colunas de 40px cada */
+    grid-gap: 2px;
+    justify-content: center;
+    margin: 20px auto;
+  }
+  
+  /* Células da grade */
+  .cell {
+    background: white;
+    border: 1px solid #ccc;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .cell:focus {
+    outline: none;
+    background: #ffeb3b;
+  }
+  
+  /* Rodapé */
+  footer {
+    text-align: center;
+    padding: 10px;
+    background: #333;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+  
