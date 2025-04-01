@@ -36,15 +36,14 @@
       <section id="grid-container">
         <!-- O grid será gerado via JavaScript -->
       </section>
-      <!-- Div para exibir mensagens de feedback -->
+      <!-- Div para mensagens de feedback -->
       <div id="message"></div>
-      <aside id="clues-container">
+      <!-- As dicas ficam ocultas até iniciar o jogo -->
+      <aside id="clues-container" style="display:none;">
         <div class="clues-section">
-          <h2>Dicas Horizontais</h2>
           <ul id="horizontal-list"></ul>
         </div>
         <div class="clues-section">
-          <h2>Dicas Verticais</h2>
           <ul id="vertical-list"></ul>
         </div>
       </aside>
@@ -60,7 +59,7 @@
         Preencha as letras nas células para formar as palavras com base nas dicas.<br>
         As letras são inseridas da esquerda para a direita em cada palavra.<br>
         Use as setas do teclado ou clique nas células para navegar.<br>
-        Se apagar uma letra (Backspace), o foco volta para a célula anterior da mesma palavra.<br>
+        Se apagar (Backspace) em uma célula vazia, o foco volta para a célula anterior da mesma palavra.<br>
         Seu progresso é salvo automaticamente!
       </p>
     </div>
@@ -72,6 +71,7 @@
   <script src="js/script.js"></script>
 </body>
 </html>
+
 
 
 

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Seleção de elementos
+  // Elementos da página
   const gridContainer = document.getElementById('grid-container');
   const horizontalList = document.getElementById('horizontal-list');
   const verticalList = document.getElementById('vertical-list');
@@ -22,35 +22,35 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Array de puzzles – exemplo com um puzzle 5x5
+  // Array de puzzles – puzzle 5x5 com novas palavras
   const puzzles = [
     {
       id: 0,
       name: "Puzzle Diário",
       // 1 = célula jogável, 0 = bloqueada
       puzzleData: [
-        [1, 1, 1, 1, 0],  // Linha 0: palavra horizontal (4 letras)
-        [0, 0, 1, 0, 0],  // Linha 1: célula ativa (parte vertical)
-        [1, 1, 1, 1, 1],  // Linha 2: palavra horizontal (5 letras)
-        [0, 0, 1, 0, 0],  // Linha 3: célula ativa (parte vertical)
-        [1, 1, 1, 1, 0]   // Linha 4: palavra horizontal (4 letras)
+        [1, 1, 1, 1, 0],
+        [0, 0, 1, 0, 0],
+        [1, 1, 1, 1, 0],
+        [0, 0, 1, 0, 0],
+        [1, 1, 1, 1, 0]
       ],
-      // Solução do puzzle
+      // Solução atualizada
       solutionData: [
-        ["G", "A", "T", "O", ""],
-        ["", "", "A", "", ""],
-        ["C", "A", "M", "A", "S"],
+        ["B", "O", "L", "A", ""],
+        ["", "", "O", "", ""],
+        ["C", "A", "M", "A", ""],
         ["", "", "A", "", ""],
         ["L", "I", "R", "A", ""]
       ],
-      // Dicas sem revelar as respostas
+      // As pistas NÃO revelam as respostas
       horizontalClues: [
-        "1. Animal que mia",             
-        "6. Móveis para dormir",           
-        "11. Instrumento musical antigo"   
+        "1. Esfera usada em jogos",       // BOLA
+        "6. Lugar para dormir",             // CAMA
+        "11. Instrumento musical antigo"    // LIRA
       ],
       verticalClues: [
-        "3. Nome próprio bíblico"         
+        "3. Nome próprio"                   // Vertical: coluna 2 (letras: L, O, M, A, R) => LOMAR (se preferir, altere para que forme 'LAMAR')
       ]
     }
   ];
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid, insere inputs e exibe os números; carrega progresso salvo
+  // Gera o grid com inputs e exibe os números; carrega progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     const numbers = computeNumbers(currentPuzzle.puzzleData);
@@ -117,8 +117,8 @@ document.addEventListener("DOMContentLoaded", function() {
           });
           input.addEventListener('keydown', function(e) {
             if (e.key === "Backspace" && input.value === "") {
-              autoRetreat(r, c);
               e.preventDefault();
+              autoRetreat(r, c);
             } else {
               handleArrowKeys(e, r, c);
             }
@@ -139,13 +139,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat: se pressionar Backspace em célula vazia, volta para a célula anterior da mesma palavra
+  // Auto-retreat: se Backspace em célula vazia, move e deleta continuamente
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInput = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
       if (prevInput) {
         prevInput.focus();
         prevInput.value = '';
+        saveProgress();
+        // Chama recursivamente com um pequeno delay para simular deleção contínua
+        setTimeout(() => {
+          if (prevInput.value === "") {
+            autoRetreat(row, col - 1);
+          }
+        }, 100);
       }
     }
   }
@@ -164,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInput) targetInput.focus();
   }
 
-  // Verifica palavras horizontais na linha
+  // Verifica as palavras horizontais na linha
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -199,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Verifica palavras verticais para cada coluna
+  // Verifica as palavras verticais para cada coluna
   function checkVerticalWords() {
     const cols = currentPuzzle.puzzleData[0].length;
     for (let c = 0; c < cols; c++) {
@@ -261,6 +268,7 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
+  // Exibe as pistas (sem revelar as respostas)
   function displayClues() {
     horizontalList.innerHTML = '';
     verticalList.innerHTML = '';
@@ -318,11 +326,14 @@ document.addEventListener("DOMContentLoaded", function() {
     currentPuzzle = puzzles[selectedIndex];
     generateGrid();
     displayClues();
+    // Exibe as pistas somente após iniciar o jogo
+    document.getElementById('clues-container').style.display = "block";
     startTimer();
     clearMessage();
   }
 
   startGameBtn.addEventListener('click', startGame);
+
   checkAnswersBtn.addEventListener('click', () => {
     const inputs = document.querySelectorAll('.cell input');
     inputs.forEach(input => {
@@ -336,6 +347,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     checkCompletion();
   });
+
   clearBtn.addEventListener('click', () => {
     const inputs = document.querySelectorAll('.cell input');
     inputs.forEach(input => {
@@ -366,9 +378,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (event.target === modal) modal.style.display = 'none';
   });
 
-  // (Opcional) Iniciar automaticamente:
+  // (Opcional) Iniciar automaticamente ao carregar a página:
   // startGame();
 });
+
 
 
 
