@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Palavras Cruzadas</title>
-  <!-- Google Fonts (opcional) -->
+  <!-- Fonte do Google (opcional) -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <!-- CSS principal -->
   <link rel="stylesheet" href="css/style.css">
@@ -17,6 +17,8 @@
       <h1 id="title">Palavras Cruzadas</h1>
       <nav>
         <button id="startGameBtn">Iniciar Jogo</button>
+        <button id="checkAnswersBtn">Verificar Respostas</button>
+        <button id="clearBtn">Limpar</button>
         <button id="instructionsBtn">Instruções</button>
       </nav>
     </div>
@@ -25,7 +27,7 @@
   <main>
     <div class="game-container">
       <section id="grid-container">
-        <!-- A grade será gerada via JavaScript -->
+        <!-- A grade do jogo será gerada via JavaScript -->
       </section>
       <aside id="clues-container">
         <div class="clues-section">
@@ -45,7 +47,11 @@
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
       <h2>Como Jogar</h2>
-      <p>Preencha as letras nas células para formar as palavras de acordo com as dicas. Navegue com o teclado ou clicando nas células. Boa sorte!</p>
+      <p>
+        Preencha as letras nas células para formar as palavras de acordo com as dicas.<br>
+        Use as setas do teclado ou clique nas células para navegar.<br>
+        Clique em "Verificar Respostas" para conferir seu desempenho.
+      </p>
     </div>
   </div>
 
@@ -55,5 +61,6 @@
   <script src="js/script.js"></script>
 </body>
 </html>
+
 
 
