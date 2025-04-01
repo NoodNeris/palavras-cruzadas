@@ -1,65 +1,151 @@
 /* Reset básico e definição de fonte */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    font-family: 'Arial', sans-serif;
-    background: #f0f0f0;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Cabeçalho */
-  header {
-    background: #333;
-    color: white;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  h1 {
-    margin: 0;
-    font-size: 2.5em;
-  }
-  
-  /* Conteúdo principal */
-  main {
-    padding: 20px;
-  }
-  
-  /* Área do puzzle (grade) */
-  #puzzle {
-    display: grid;
-    grid-template-columns: repeat(10, 40px); /* 10 colunas de 40px cada */
-    grid-gap: 2px;
-    justify-content: center;
-    margin: 20px auto;
-  }
-  
-  /* Células da grade */
-  .cell {
-    background: white;
-    border: 1px solid #ccc;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .cell:focus {
-    outline: none;
-    background: #ffeb3b;
-  }
-  
-  /* Rodapé */
-  footer {
-    text-align: center;
-    padding: 10px;
-    background: #333;
-    color: white;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
-  
+  font-family: 'Arial', sans-serif;
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* Cabeçalho */
+header {
+  background: #333;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+nav {
+  margin-top: 10px;
+}
+
+nav button {
+  background: #ff5722;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+nav button:hover {
+  background: #e64a19;
+}
+
+/* Container do Jogo */
+.game-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px;
+}
+
+/* Grid de Palavras Cruzadas */
+#grid-container {
+  display: grid;
+  grid-template-columns: repeat(10, 40px);
+  grid-gap: 2px;
+  margin: 20px;
+}
+
+.cell {
+  background: white;
+  border: 1px solid #ccc;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.cell:focus {
+  outline: none;
+  background: #ffeb3b;
+}
+
+/* Células bloqueadas (preenchidas) */
+.cell.blocked {
+  background: #333;
+  cursor: default;
+}
+
+/* Container de Dicas */
+#clues-container {
+  max-width: 300px;
+  margin: 20px;
+}
+
+#clues-container h2 {
+  margin-bottom: 10px;
+}
+
+#clues-container ul {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+#clues-container li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Modal de Instruções */
+.modal {
+  display: none; /* Escondido por padrão */
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 500px;
+  text-align: center;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+}
+
+/* Rodapé */
+footer {
+  text-align: center;
+  padding: 10px;
+  background: #333;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}

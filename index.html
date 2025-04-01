@@ -11,14 +11,46 @@
 <body>
   <header>
     <h1 id="title">Palavras Cruzadas em Inglês</h1>
+    <nav>
+      <button id="startGameBtn">Iniciar Jogo</button>
+      <button id="instructionsBtn">Instruções</button>
+    </nav>
   </header>
   <main>
-    <!-- Área do Puzzle: a grade será gerada automaticamente pelo script -->
-    <section id="puzzle"></section>
+    <div class="game-container">
+      <div id="grid-container">
+        <!-- A grade do puzzle será gerada dinamicamente -->
+      </div>
+      <div id="clues-container">
+        <div id="horizontal-clues">
+          <h2>Dicas Horizontais</h2>
+          <ul id="horizontal-list">
+            <!-- Lista de dicas horizontais -->
+          </ul>
+        </div>
+        <div id="vertical-clues">
+          <h2>Dicas Verticais</h2>
+          <ul id="vertical-list">
+            <!-- Lista de dicas verticais -->
+          </ul>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <!-- Modal de Instruções -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h2>Como Jogar</h2>
+      <p>Preencha as letras nas células para formar as palavras correspondentes às dicas. Use as setas do teclado ou clique nas células para navegar. Boa sorte!</p>
+    </div>
+  </div>
+
   <footer>
-    <p>&copy; 2025 Seu Nome ou Empresa</p>
+    <p>&copy; 2025 NoodNeris</p>
   </footer>
   <script src="js/script.js"></script>
 </body>
 </html>
+
