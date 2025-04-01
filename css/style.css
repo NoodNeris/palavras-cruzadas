@@ -187,6 +187,28 @@ nav button:hover {
   color: #eee;
 }
 
+/* Teclado Virtual */
+#keyboard-container {
+  margin: 20px auto;
+  text-align: center;
+}
+.key {
+  display: inline-block;
+  margin: 5px;
+  padding: 10px 15px;
+  background: #444;
+  color: #fff;
+  border: 1px solid #00FFFF;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8em;
+  user-select: none;
+}
+.key:hover {
+  background: #00FFFF;
+  color: #111;
+}
+
 /* Modal */
 .modal {
   display: none;
@@ -251,6 +273,10 @@ footer {
   .cell input {
     font-size: 1em;
   }
+  .key {
+    padding: 8px 12px;
+    font-size: 0.7em;
+  }
 }
 
 @media (max-width: 480px) {
@@ -275,11 +301,11 @@ footer {
   .cell input {
     font-size: 0.8em;
   }
+  .key {
+    padding: 6px 10px;
+    font-size: 0.6em;
+  }
 }
-
-
-
-
 
 
 

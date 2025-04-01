@@ -2,16 +2,21 @@ document.addEventListener("DOMContentLoaded", function() {
   // Seleção de elementos
   const gridContainer = document.getElementById('grid-container');
   const horizontalList = document.getElementById('horizontal-list');
-  const verticalList = document.getElementById('vertical-list');
+  const messageDiv = document.getElementById('message');
+  const timerDisplay = document.getElementById('timer');
+  const puzzleSelect = document.getElementById('puzzleSelect');
+  const keyboardContainer = document.getElementById('keyboard-container');
   const startGameBtn = document.getElementById('startGameBtn');
   const checkAnswersBtn = document.getElementById('checkAnswersBtn');
   const clearBtn = document.getElementById('clearBtn');
   const instructionsBtn = document.getElementById('instructionsBtn');
-  const puzzleSelect = document.getElementById('puzzleSelect');
-  const timerDisplay = document.getElementById('timer');
-  const messageDiv = document.getElementById('message');
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
+  
+  let currentPuzzle = null;
+  let timerInterval = null;
+  let startTime = null;
+  let currentInput = null; // Para rastrear a célula atualmente focada
 
   // Animação do título
   anime({
@@ -23,72 +28,58 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Puzzle de teste – Tema "Frutas"
-  // Grid de 7 linhas x 10 colunas:
-  // Row 0: Vertical apenas, ativa na coluna 5 (deve ser preenchida pelo usuário) – vertical letra 1: L
-  // Row 1: BANANA, ativa de col 0 a 5 (BANANA: B A N A N A; intersection em col5 deve ser A)
-  // Row 2: Vertical apenas, ativa na coluna 5 – vertical letra 3: R
-  // Row 3: UVA, ativa de col 3 a 5 (UVA: U, V, A; intersection em col5 deve ser A)
-  // Row 4: Vertical apenas, ativa na coluna 5 – vertical letra 5: N
-  // Row 5: JACA, ativa de col 5 a 8 (JACA: J, A, C, A; intersection em col5 deve ser J)
-  // Row 6: Vertical apenas, ativa na coluna 5 – vertical letra 7: A
+  // Grid de 7 linhas x 10 colunas (apenas linhas com palavras horizontais serão ativas):
+  // Row 0,2,4,6: bloqueadas
+  // Row 1: BANANA, ativa de col 1 a 6
+  // Row 3: UVA, ativa de col 2 a 4
+  // Row 5: MELANCIA, ativa de col 1 a 8
   const puzzles = [
     {
       id: 0,
       name: "Puzzle Diário - Frutas",
       puzzleData: [
-        [0,0,0,0,0,1,0,0,0,0], // Row 0
-        [1,1,1,1,1,1,0,0,0,0], // Row 1: BANANA
-        [0,0,0,0,0,1,0,0,0,0], // Row 2
-        [0,0,0,1,1,1,0,0,0,0], // Row 3: UVA
-        [0,0,0,0,0,1,0,0,0,0], // Row 4
-        [0,0,0,0,0,1,1,1,1,0], // Row 5: JACA
-        [0,0,0,0,0,1,0,0,0,0]  // Row 6
+        [0,0,0,0,0,0,0,0,0,0],                // Row 0: bloqueada
+        [0,1,1,1,1,1,1,0,0,0],                // Row 1: BANANA (6 letras) de col 1 a 6
+        [0,0,0,0,0,0,0,0,0,0],                // Row 2: bloqueada
+        [0,0,1,1,1,0,0,0,0,0],                // Row 3: UVA (3 letras) de col 2 a 4
+        [0,0,0,0,0,0,0,0,0,0],                // Row 4: bloqueada
+        [0,1,1,1,1,1,1,1,0,0],                // Row 5: MELANCIA (8 letras) de col 1 a 8
+        [0,0,0,0,0,0,0,0,0,0]                 // Row 6: bloqueada
       ],
-      // Matriz de números para as pistas (definida manualmente)
-      // Horizontal: Row 1: número 1 na coluna 0; Row 3: número 6 na coluna 3; Row 5: número 11 na coluna 5.
-      // Vertical: Usaremos o número 3 para a pista vertical, associada à célula ativa de Row 0, col5.
+      // Matriz de números para as pistas, definida manualmente:
+      // Row 1 (BANANA) terá número 1 na coluna 1; Row 3 (UVA) terá número 6 na coluna 2; Row 5 (MELANCIA) terá número 11 na coluna 1.
       clueNumbers: [
-        [0,0,0,0,0,3,0,0,0,0],
-        [1,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,6,0,0,0,0,0,0],
+        [0,1,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,11,0,0,0,0],
+        [0,0,6,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,11,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0]
       ],
-      // Solução do puzzle:
+      // Solução:
+      // Row 1: BANANA (col 1 a 6)
+      // Row 3: UVA (col 2 a 4)
+      // Row 5: MELANCIA (col 1 a 8)
       solutionData: [
-        // Row 0 (vertical): somente col 5 ativa, letra "L"
-        ["", "", "", "", "", "L", "", "", "", ""],
-        // Row 1 (BANANA): de col 0 a 5: B A N A N A
-        ["B", "A", "N", "A", "N", "A", "", "", "", ""],
-        // Row 2 (vertical): somente col 5 ativa, letra "R"
-        ["", "", "", "", "", "R", "", "", "", ""],
-        // Row 3 (UVA): de col 3 a 5: U, V, A
-        ["", "", "", "U", "V", "A", "", "", "", ""],
-        // Row 4 (vertical): somente col 5 ativa, letra "N"
-        ["", "", "", "", "", "N", "", "", "", ""],
-        // Row 5 (JACA): de col 5 a 8: J, A, C, A
-        ["", "", "", "", "", "J", "A", "C", "A", ""],
-        // Row 6 (vertical): somente col 5 ativa, letra "A"
-        ["", "", "", "", "", "A", "", "", "", ""]
+        ["","","","","","","","","",""],
+        ["", "B", "A", "N", "A", "N", "A", "", "", ""],
+        ["","","","","","","","","",""],
+        ["", "", "U", "V", "A", "", "", "", "", ""],
+        ["","","","","","","","","",""],
+        ["", "M", "E", "L", "A", "N", "C", "I", "A", ""],
+        ["","","","","","","","","",""]
       ],
       horizontalClues: [
         "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (número 1)
         "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (número 6)
-        "Fruta exótica, com polpa doce e textura única."               // JACA (número 11)
-      ],
-      verticalClues: [
-        "Fruta cítrica, muito usada em sucos e rica em vitamina C."      // LARANJA (número 3)
+        "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (número 11)
       ]
+      // Sem vertical, então verticalClues não é necessário.
     }
   ];
 
-  let currentPuzzle = null;
-  let timerInterval = null;
-  let startTime = null;
-
-  // Retorna a matriz de números definida manualmente (se existir) ou calcula automaticamente
+  // Retorna a matriz de números (manual ou calculada)
   function getNumbers(puzzleData) {
     if (currentPuzzle.clueNumbers) return currentPuzzle.clueNumbers;
     return computeNumbers(puzzleData);
@@ -117,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid, insere os inputs e números, e carrega o progresso salvo
+  // Gera o grid, insere os inputs, números e carrega o progresso
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -142,17 +133,15 @@ document.addEventListener("DOMContentLoaded", function() {
           input.setAttribute('maxlength', '1');
           input.dataset.row = r;
           input.dataset.col = c;
+          input.addEventListener('focus', function() {
+            currentInput = input;
+          });
           input.addEventListener('input', function() {
             input.value = input.value.toUpperCase();
             saveProgress();
-            // Se a célula faz parte de uma linha horizontal (rows 1, 3, 5), auto-avança horizontalmente; senão, verticalmente.
-            if (r === 1 || r === 3 || r === 5) {
-              autoAdvance(r, c);
-            } else {
-              autoAdvanceVertical(r, c);
-            }
+            // Auto-avanço horizontal
+            autoAdvance(r, c);
             checkHorizontalWord(r);
-            checkVerticalWords();
             checkCompletion();
           });
           input.addEventListener('keydown', function(e) {
@@ -171,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avanço horizontal: dentro do mesmo bloco; se completo, passa para o próximo bloco ou para a linha seguinte
+  // Auto-avanço horizontal: tenta avançar dentro do mesmo bloco; se completo, pula para o próximo bloco ou para a linha seguinte
   function autoAdvance(row, col) {
     let startCol = col;
     while (startCol > 0 && currentPuzzle.puzzleData[row][startCol - 1] === 1) {
@@ -190,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
     if (blockComplete) {
-      // Procura o próximo bloco na mesma linha
+      // Se houver outro bloco na mesma linha depois do bloqueio
       for (let c = endCol + 1; c < currentPuzzle.puzzleData[row].length; c++) {
         if (currentPuzzle.puzzleData[row][c] === 1) {
           const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -200,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       }
-      // Se não houver, passa para o primeiro campo ativo da linha seguinte
+      // Se não houver, pula para o primeiro bloco ativo da linha seguinte
       if (row + 1 < currentPuzzle.puzzleData.length) {
         for (let c = 0; c < currentPuzzle.puzzleData[row + 1].length; c++) {
           if (currentPuzzle.puzzleData[row + 1][c] === 1) {
@@ -213,7 +202,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
     } else {
-      // Se o bloco não estiver completo, avança para a próxima célula dentro do mesmo bloco
       if (col + 1 <= endCol) {
         const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col + 1}"]`);
         if (nextInp) nextInp.focus();
@@ -221,15 +209,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-avanço vertical: para células isoladas (linhas 0,2,4,6), avança para a próxima linha ativa na mesma coluna
-  function autoAdvanceVertical(row, col) {
-    if (row + 1 < currentPuzzle.puzzleData.length && currentPuzzle.puzzleData[row + 1][col] === 1) {
-      const nextInp = document.querySelector(`.cell input[data-row="${row + 1}"][data-col="${col}"]`);
-      if (nextInp) nextInp.focus();
-    }
-  }
-
-  // Auto-retreat contínuo: se Backspace em célula vazia, retorna para a célula anterior do mesmo bloco e limpa
+  // Auto-retreat contínuo: se Backspace em célula vazia, volta para a célula anterior no mesmo bloco e limpa
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -285,50 +265,12 @@ document.addEventListener("DOMContentLoaded", function() {
         break;
       }
     }
-    if (complete && cells.length > 1) {
+    if (complete && cells.length > 0) {
       cells.forEach(({ row, col }) => {
         const cellDiv = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
         if (cellDiv) cellDiv.classList.add('completed');
       });
       showMessage("Palavra horizontal completa!");
-      setTimeout(clearMessage, 2000);
-    }
-  }
-
-  // Verifica os blocos verticais em cada coluna
-  function checkVerticalWords() {
-    const cols = currentPuzzle.puzzleData[0].length;
-    for (let c = 0; c < cols; c++) {
-      let cells = [];
-      for (let r = 0; r < currentPuzzle.puzzleData.length; r++) {
-        if (currentPuzzle.puzzleData[r][c] === 1) {
-          cells.push({ row: r, col: c });
-        } else {
-          if (cells.length > 0) {
-            verifyVerticalBlock(cells);
-            cells = [];
-          }
-        }
-      }
-      if (cells.length > 0) verifyVerticalBlock(cells);
-    }
-  }
-
-  function verifyVerticalBlock(cells) {
-    let complete = true;
-    for (const { row, col } of cells) {
-      const inp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col}"]`);
-      if (!inp || inp.value === "" || inp.value !== currentPuzzle.solutionData[row][col]) {
-        complete = false;
-        break;
-      }
-    }
-    if (complete && cells.length > 1) {
-      cells.forEach(({ row, col }) => {
-        const cellDiv = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-        if (cellDiv) cellDiv.classList.add('completed');
-      });
-      showMessage("Palavra vertical completa!");
       setTimeout(clearMessage, 2000);
     }
   }
@@ -357,14 +299,13 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com os números definidos
+  // Exibe as pistas com a numeração definida manualmente
   function displayClues() {
     horizontalList.innerHTML = `
-      <li>1: ${currentPuzzle.horizontalClues[0]}</li>
-      <li>6: ${currentPuzzle.horizontalClues[1]}</li>
-      <li>11: ${currentPuzzle.horizontalClues[2]}</li>
+      <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
+      <li>6: Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.</li>
+      <li>11: Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas.</li>
     `;
-    verticalList.innerHTML = `<li>3: ${currentPuzzle.verticalClues[0]}</li>`;
   }
 
   function startTimer() {
@@ -404,13 +345,59 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
+  // Cria o teclado virtual
+  function createKeyboard() {
+    const keys = [
+      "A","B","C","D","E","F","G","H","I","J",
+      "K","L","M","N","O","P","Q","R","S","T",
+      "U","V","W","X","Y","Z",
+      "Backspace","Enter"
+    ];
+    keyboardContainer.innerHTML = "";
+    keys.forEach(key => {
+      const btn = document.createElement('div');
+      btn.classList.add('key');
+      btn.textContent = key;
+      btn.addEventListener('click', function() {
+        if (!currentInput) return;
+        if (key === "Backspace") {
+          // Simula o Backspace: se o campo atual estiver vazio, chama auto-retreat
+          if (currentInput.value === "") {
+            const r = parseInt(currentInput.dataset.row);
+            const c = parseInt(currentInput.dataset.col);
+            autoRetreat(r, c);
+          } else {
+            currentInput.value = "";
+          }
+          saveProgress();
+          currentInput.focus();
+        } else if (key === "Enter") {
+          // Se Enter, simula um auto-avanço horizontal
+          const r = parseInt(currentInput.dataset.row);
+          const c = parseInt(currentInput.dataset.col);
+          autoAdvance(r, c);
+        } else {
+          // Insere a letra e chama auto-avanço
+          currentInput.value = key;
+          saveProgress();
+          const r = parseInt(currentInput.dataset.row);
+          const c = parseInt(currentInput.dataset.col);
+          autoAdvance(r, c);
+        }
+      });
+      keyboardContainer.appendChild(btn);
+    });
+    keyboardContainer.style.display = "block";
+  }
+
   function startGame() {
     const selectedIndex = parseInt(puzzleSelect.value);
     currentPuzzle = puzzles[selectedIndex];
     generateGrid();
     displayClues();
-    document.getElementById('grid-container').style.display = "grid";
+    gridContainer.style.display = "grid";
     document.getElementById('clues-container').style.display = "block";
+    createKeyboard();
     startTimer();
     clearMessage();
   }
@@ -464,6 +451,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 
