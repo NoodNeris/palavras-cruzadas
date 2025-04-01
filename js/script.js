@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Elementos da página
+  // Seleção de elementos
   const gridContainer = document.getElementById('grid-container');
   const horizontalList = document.getElementById('horizontal-list');
   const verticalList = document.getElementById('vertical-list');
@@ -22,35 +22,38 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Array de puzzles – puzzle 5x5 com novas palavras
+  // Puzzle atualizado para o tema "Culinária"
+  // Usando um grid 5x5 com linhas 1 e 3 bloqueadas, exceto coluna 2
+  // Horizontal:
+  //  - Linha 0: MASSA (M, A, S, S, A)
+  //  - Linha 2: SABOR (S, A, B, O, R)
+  //  - Linha 4: CARNE (C, A, R, N, E)
+  // Vertical (coluna 2): Deve formar SABOR: S, A, B, O, R
   const puzzles = [
     {
       id: 0,
-      name: "Puzzle Diário",
-      // 1 = célula jogável, 0 = bloqueada
+      name: "Puzzle Diário - Culinária",
       puzzleData: [
-        [1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1],
         [0, 0, 1, 0, 0],
-        [1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1],
         [0, 0, 1, 0, 0],
-        [1, 1, 1, 1, 0]
+        [1, 1, 1, 1, 1]
       ],
-      // Solução atualizada
       solutionData: [
-        ["B", "O", "L", "A", ""],
-        ["", "", "O", "", ""],
-        ["C", "A", "M", "A", ""],
-        ["", "", "A", "", ""],
-        ["L", "I", "R", "A", ""]
+        ["M", "A", "S", "S", "A"],  // MASSA
+        ["",  "",  "A", "",  ""],
+        ["S", "A", "B", "O", "R"],  // SABOR
+        ["",  "",  "O", "",  ""],
+        ["C", "A", "R", "N", "E"]   // CARNE
       ],
-      // As pistas NÃO revelam as respostas
       horizontalClues: [
-        "1. Esfera usada em jogos",       // BOLA
-        "6. Lugar para dormir",             // CAMA
-        "11. Instrumento musical antigo"    // LIRA
+        "1. Ingrediente usado em pães e pizzas",       // MASSA
+        "6. Algo que torna a comida deliciosa",           // SABOR
+        "11. Fonte de proteína essencial"                // CARNE
       ],
       verticalClues: [
-        "3. Nome próprio"                   // Vertical: coluna 2 (letras: L, O, M, A, R) => LOMAR (se preferir, altere para que forme 'LAMAR')
+        "3. Palavra que resume o paladar dos pratos"      // SABOR
       ]
     }
   ];
@@ -83,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid com inputs e exibe os números; carrega progresso salvo
+  // Gera o grid, insere inputs e exibe os números; carrega progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     const numbers = computeNumbers(currentPuzzle.puzzleData);
@@ -139,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat: se Backspace em célula vazia, move e deleta continuamente
+  // Auto-retreat: se Backspace em célula vazia, move e deleta continuamente (com pequeno delay)
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInput = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -147,7 +150,6 @@ document.addEventListener("DOMContentLoaded", function() {
         prevInput.focus();
         prevInput.value = '';
         saveProgress();
-        // Chama recursivamente com um pequeno delay para simular deleção contínua
         setTimeout(() => {
           if (prevInput.value === "") {
             autoRetreat(row, col - 1);
@@ -171,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInput) targetInput.focus();
   }
 
-  // Verifica as palavras horizontais na linha
+  // Verifica as palavras horizontais na linha 'row'
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -268,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas (sem revelar as respostas)
+  // Exibe as pistas (clues) – agora sem títulos explícitos
   function displayClues() {
     horizontalList.innerHTML = '';
     verticalList.innerHTML = '';
@@ -378,9 +380,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (event.target === modal) modal.style.display = 'none';
   });
 
-  // (Opcional) Iniciar automaticamente ao carregar a página:
+  // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 

@@ -27,8 +27,14 @@ header {
 
 header h1 {
   font-size: 2em;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   color: #00FFFF;
+}
+
+#theme {
+  font-size: 0.8em;
+  color: #FF00FF;
+  margin-bottom: 10px;
 }
 
 .header-controls {
@@ -73,6 +79,22 @@ nav button {
 nav button:hover {
   background: #FF00FF;
   color: #fff;
+}
+
+/* Hero Section */
+.hero {
+  margin-top: 15px;
+  padding: 10px;
+}
+
+.hero h2 {
+  font-size: 1.2em;
+  color: #FF00FF;
+}
+
+.hero p {
+  font-size: 0.8em;
+  color: #00FFFF;
 }
 
 /* Container do Jogo */
@@ -153,7 +175,7 @@ nav button:hover {
   color: #00FF00;
 }
 
-/* Dicas (Clues) – agora sem cabeçalhos visíveis */
+/* Dicas (Clues) – sem cabeçalhos explícitos */
 #clues-container {
   max-width: 350px;
   width: 100%;
@@ -269,6 +291,7 @@ footer {
     font-size: 0.8em;
   }
 }
+
 
 
 

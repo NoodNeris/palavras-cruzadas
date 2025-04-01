@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palavras Cruzadas</title>
+  <title>Palavras Cruzadas - Culinária</title>
   <!-- Fonte Gamer: Press Start 2P -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <!-- CSS principal -->
@@ -15,9 +15,10 @@
   <header>
     <div class="container-header">
       <h1 id="title">Palavras Cruzadas</h1>
+      <p id="theme">Tema: Culinária</p>
       <div class="header-controls">
         <select id="puzzleSelect">
-          <!-- Por enquanto, apenas um puzzle diário -->
+          <!-- Atualmente, apenas um puzzle -->
           <option value="0">Puzzle Diário</option>
         </select>
         <span id="timer">00:00</span>
@@ -29,6 +30,11 @@
         <button id="instructionsBtn">Instruções</button>
       </nav>
     </div>
+    <!-- Hero Section para deixar a homepage mais chamativa -->
+    <section class="hero">
+      <h2>Descubra os segredos da culinária!</h2>
+      <p>Preencha o puzzle e revele o verdadeiro SABOR.</p>
+    </section>
   </header>
 
   <main>
@@ -38,8 +44,8 @@
       </section>
       <!-- Div para mensagens de feedback -->
       <div id="message"></div>
-      <!-- As dicas ficam ocultas até iniciar o jogo -->
-      <aside id="clues-container" style="display:none;">
+      <!-- Bloco de dicas fica oculto até o jogo iniciar -->
+      <aside id="clues-container" style="display: none;">
         <div class="clues-section">
           <ul id="horizontal-list"></ul>
         </div>
@@ -59,7 +65,7 @@
         Preencha as letras nas células para formar as palavras com base nas dicas.<br>
         As letras são inseridas da esquerda para a direita em cada palavra.<br>
         Use as setas do teclado ou clique nas células para navegar.<br>
-        Se apagar (Backspace) em uma célula vazia, o foco volta para a célula anterior da mesma palavra.<br>
+        Se apagar (Backspace) em uma célula vazia, o foco volta para a célula anterior da mesma palavra, permitindo deleção contínua.<br>
         Seu progresso é salvo automaticamente!
       </p>
     </div>
@@ -71,6 +77,7 @@
   <script src="js/script.js"></script>
 </body>
 </html>
+
 
 
 
