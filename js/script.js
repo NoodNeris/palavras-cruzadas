@@ -22,72 +22,64 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Puzzle de teste com tema "Frutas"
-  // Grid 7x10. As linhas onde há palavras horizontais:
-  //  - Row 1: BANANA, 6 letras, iniciando na coluna 2.
-  //  - Row 3: UVA, 3 letras, iniciando na coluna 3.
-  //  - Row 6: MELANCIA, 8 letras, iniciando na coluna 2.
-  // A vertical será formada na coluna 5 por todas as linhas, resultando em "LARANJA":
-  //  Row0: L, Row1: A (de BANANA, posição 5-2=3), Row2: R, Row3: A (de UVA, posição 5-3=2), Row4: N, Row5: J, Row6: A (de MELANCIA, posição 5-2=3).
+  // Puzzle de teste – Tema "Frutas"
+  // Grid de 7 linhas x 10 colunas:
+  // Row 0: Vertical apenas, ativa na coluna 5 (deve ser preenchida pelo usuário) – vertical letra 1: L
+  // Row 1: BANANA, ativa de col 0 a 5 (BANANA: B A N A N A; intersection em col5 deve ser A)
+  // Row 2: Vertical apenas, ativa na coluna 5 – vertical letra 3: R
+  // Row 3: UVA, ativa de col 3 a 5 (UVA: U, V, A; intersection em col5 deve ser A)
+  // Row 4: Vertical apenas, ativa na coluna 5 – vertical letra 5: N
+  // Row 5: JACA, ativa de col 5 a 8 (JACA: J, A, C, A; intersection em col5 deve ser J)
+  // Row 6: Vertical apenas, ativa na coluna 5 – vertical letra 7: A
   const puzzles = [
     {
       id: 0,
       name: "Puzzle Diário - Frutas",
-      // Matriz puzzleData (7 linhas x 10 colunas):
-      // 1 = célula ativa; 0 = bloqueada.
       puzzleData: [
-        // Row 0: apenas coluna 5 ativa (vertical)
-        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        // Row 1: BANANA de col 2 a 7
-        [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
-        // Row 2: apenas coluna 5 ativa (vertical)
-        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        // Row 3: UVA de col 3 a 5
-        [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
-        // Row 4: apenas coluna 5 ativa (vertical)
-        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        // Row 5: apenas coluna 5 ativa (vertical)
-        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        // Row 6: MELANCIA de col 2 a 9
-        [0, 0, 1, 1, 1, 1, 1, 1, 1, 0]
+        [0,0,0,0,0,1,0,0,0,0], // Row 0
+        [1,1,1,1,1,1,0,0,0,0], // Row 1: BANANA
+        [0,0,0,0,0,1,0,0,0,0], // Row 2
+        [0,0,0,1,1,1,0,0,0,0], // Row 3: UVA
+        [0,0,0,0,0,1,0,0,0,0], // Row 4
+        [0,0,0,0,0,1,1,1,1,0], // Row 5: JACA
+        [0,0,0,0,0,1,0,0,0,0]  // Row 6
       ],
-      // Matriz de números para as pistas, definida manualmente:
-      // Horizontais: Row1 = 1, Row3 = 6, Row6 = 11; Vertical: Row0, col5 =  ? (definimos para pista vertical, usamos número 3 na célula de Row? Mas vamos definir a vertical com número 3 na Row? Vamos definir: vertical pista será exibida com número 3, mesmo que o grid tenha outra numeração)
-      // Aqui usaremos:
+      // Matriz de números para as pistas (definida manualmente)
+      // Horizontal: Row 1: número 1 na coluna 0; Row 3: número 6 na coluna 3; Row 5: número 11 na coluna 5.
+      // Vertical: Usaremos o número 3 para a pista vertical, associada à célula ativa de Row 0, col5.
       clueNumbers: [
-        [0,0,0,0,0,1,0,0,0,0],
-        [0,0,1,0,0,0,0,0,0,0], // Na Row1, o número 1 aparece na coluna 2.
-        [0,0,0,0,0,2,0,0,0,0],
-        [0,0,0,1,0,0,0,0,0,0], // Na Row3, o número 6 na coluna 3.
         [0,0,0,0,0,3,0,0,0,0],
-        [0,0,0,0,0,4,0,0,0,0],
-        [0,0,1,0,0,0,0,0,0,0]  // Na Row6, o número 11 na coluna 2.
+        [1,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,6,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,11,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0]
       ],
-      // Definindo a solução (nas células ativas). As células não ativas ficam em branco.
+      // Solução do puzzle:
       solutionData: [
-        // Row 0 (vertical): apenas col 5 = "L"
+        // Row 0 (vertical): somente col 5 ativa, letra "L"
         ["", "", "", "", "", "L", "", "", "", ""],
-        // Row 1 (BANANA, col2-7): "B","A","N","A","N","A"
-        ["", "", "B", "A", "N", "A", "N", "A", "", ""],
-        // Row 2 (vertical): apenas col 5 = "R"
+        // Row 1 (BANANA): de col 0 a 5: B A N A N A
+        ["B", "A", "N", "A", "N", "A", "", "", "", ""],
+        // Row 2 (vertical): somente col 5 ativa, letra "R"
         ["", "", "", "", "", "R", "", "", "", ""],
-        // Row 3 (UVA, col3-5): "U","V","A"
+        // Row 3 (UVA): de col 3 a 5: U, V, A
         ["", "", "", "U", "V", "A", "", "", "", ""],
-        // Row 4 (vertical): apenas col 5 = "N"
+        // Row 4 (vertical): somente col 5 ativa, letra "N"
         ["", "", "", "", "", "N", "", "", "", ""],
-        // Row 5 (vertical): apenas col 5 = "J"
-        ["", "", "", "", "", "J", "", "", "", ""],
-        // Row 6 (MELANCIA, col2-9): "M","E","L","A","N","C","I","A"
-        ["", "", "M", "E", "L", "A", "N", "C", "I", "A"]
+        // Row 5 (JACA): de col 5 a 8: J, A, C, A
+        ["", "", "", "", "", "J", "A", "C", "A", ""],
+        // Row 6 (vertical): somente col 5 ativa, letra "A"
+        ["", "", "", "", "", "A", "", "", "", ""]
       ],
-      // Pistas para as palavras (usando as numerações que vamos exibir manualmente):
       horizontalClues: [
-        "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (pista 1)
-        "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (pista 6)
-        "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (pista 11)
+        "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (número 1)
+        "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (número 6)
+        "Fruta exótica, com polpa doce e textura única."               // JACA (número 11)
       ],
       verticalClues: [
-        "Fruta cítrica, muito usada em sucos e rica em vitamina C." // LARANJA (pista 3)
+        "Fruta cítrica, muito usada em sucos e rica em vitamina C."      // LARANJA (número 3)
       ]
     }
   ];
@@ -96,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let timerInterval = null;
   let startTime = null;
 
-  // Retorna a matriz de números (se definida manualmente, usa-a; senão, calcula)
+  // Retorna a matriz de números definida manualmente (se existir) ou calcula automaticamente
   function getNumbers(puzzleData) {
     if (currentPuzzle.clueNumbers) return currentPuzzle.clueNumbers;
     return computeNumbers(puzzleData);
@@ -125,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid, insere inputs e números; carrega o progresso salvo
+  // Gera o grid, insere os inputs e números, e carrega o progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -153,11 +145,11 @@ document.addEventListener("DOMContentLoaded", function() {
           input.addEventListener('input', function() {
             input.value = input.value.toUpperCase();
             saveProgress();
-            if (r === 0 || r === 2 || r === 4 || r === 5) {
-              // Linhas com célula vertical isolada
-              autoAdvanceVertical(r, c);
+            // Se a célula faz parte de uma linha horizontal (rows 1, 3, 5), auto-avança horizontalmente; senão, verticalmente.
+            if (r === 1 || r === 3 || r === 5) {
+              autoAdvance(r, c);
             } else {
-              autoAdvance(row, c);
+              autoAdvanceVertical(r, c);
             }
             checkHorizontalWord(r);
             checkVerticalWords();
@@ -179,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avanço horizontal: dentro do mesmo bloco; se completo, pula para próximo bloco ou linha
+  // Auto-avanço horizontal: dentro do mesmo bloco; se completo, passa para o próximo bloco ou para a linha seguinte
   function autoAdvance(row, col) {
     let startCol = col;
     while (startCol > 0 && currentPuzzle.puzzleData[row][startCol - 1] === 1) {
@@ -221,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
     } else {
+      // Se o bloco não estiver completo, avança para a próxima célula dentro do mesmo bloco
       if (col + 1 <= endCol) {
         const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col + 1}"]`);
         if (nextInp) nextInp.focus();
@@ -228,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-avanço vertical: para células isoladas (linhas 0,2,4,5), move para a célula ativa na mesma coluna na linha seguinte
+  // Auto-avanço vertical: para células isoladas (linhas 0,2,4,6), avança para a próxima linha ativa na mesma coluna
   function autoAdvanceVertical(row, col) {
     if (row + 1 < currentPuzzle.puzzleData.length && currentPuzzle.puzzleData[row + 1][col] === 1) {
       const nextInp = document.querySelector(`.cell input[data-row="${row + 1}"][data-col="${col}"]`);
@@ -236,7 +229,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat contínuo: se Backspace em célula vazia, move para a célula anterior do mesmo bloco e limpa
+  // Auto-retreat contínuo: se Backspace em célula vazia, retorna para a célula anterior do mesmo bloco e limpa
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -364,7 +357,7 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com numeração clara
+  // Exibe as pistas com os números definidos
   function displayClues() {
     horizontalList.innerHTML = `
       <li>1: ${currentPuzzle.horizontalClues[0]}</li>
@@ -471,6 +464,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 
