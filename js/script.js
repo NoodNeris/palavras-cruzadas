@@ -36,9 +36,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Puzzle de teste – Tema "Frutas"
   // Grid de 3 linhas x 10 colunas:
-  // Row 0: BANANA – ativa da coluna 2 a 7
-  // Row 1: UVA – ativa da coluna 3 a 5
-  // Row 2: MELANCIA – ativa da coluna 1 a 8 (com "A" final)
+  // Row 0: BANANA, ativa de col 2 a 7.
+  // Row 1: UVA, ativa de col 3 a 5.
+  // Row 2: MELANCIA, ativa de col 1 a 8.
   const puzzles = [
     {
       id: 0,
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
         [0,0,0,1,1,1,0,0,0,0],
         [0,1,1,1,1,1,1,1,0,0]
       ],
-      // Números definidos manualmente:
+      // Matriz de números definida manualmente:
       // Row 0: número 1 na coluna 2; Row 1: número 2 na coluna 3; Row 2: número 3 na coluna 1.
       clueNumbers: [
         [0,0,1,0,0,0,0,0,0,0],
@@ -56,6 +56,9 @@ document.addEventListener("DOMContentLoaded", function() {
         [0,3,0,0,0,0,0,0,0,0]
       ],
       // Solução:
+      // Row 0: BANANA (B A N A N A)
+      // Row 1: UVA (U V A)
+      // Row 2: MELANCIA (M E L A N C I A) – agora com a letra final "A"
       solutionData: [
         ["", "", "B", "A", "N", "A", "N", "A", "", ""],
         ["", "", "", "U", "V", "A", "", "", "", ""],
@@ -97,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid, insere inputs e números; carrega o progresso
+  // Gera o grid e insere os inputs e números
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -145,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avanço horizontal
+  // Auto-avanço horizontal: tenta avançar dentro do mesmo bloco; se completo, pula para o próximo bloco ou linha
   function autoAdvance(row, col) {
     let startCol = col;
     while (startCol > 0 && currentPuzzle.puzzleData[row][startCol - 1] === 1) {
@@ -164,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
     if (blockComplete) {
-      // Próximo bloco na mesma linha
+      // Procura o próximo bloco na mesma linha
       for (let c = endCol + 1; c < currentPuzzle.puzzleData[row].length; c++) {
         if (currentPuzzle.puzzleData[row][c] === 1) {
           const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -174,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       }
-      // Se não houver, passa para o primeiro ativo da linha seguinte
+      // Se não houver, pula para o primeiro campo ativo da linha seguinte
       if (row + 1 < currentPuzzle.puzzleData.length) {
         for (let c = 0; c < currentPuzzle.puzzleData[row + 1].length; c++) {
           if (currentPuzzle.puzzleData[row + 1][c] === 1) {
@@ -194,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat contínuo
+  // Auto-retreat contínuo: se Backspace em célula vazia, retorna para a célula anterior do mesmo bloco e limpa
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -225,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInp) targetInp.focus();
   }
 
-  // Verifica o bloco horizontal na linha
+  // Verifica o bloco horizontal na linha 'row'
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -284,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com os números definidos (1, 2 e 3)
+  // Exibe as pistas com os números definidos manualmente (em ordem 1, 2, 3)
   function displayClues() {
     horizontalList.innerHTML = `
       <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
@@ -330,7 +333,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Cria o teclado virtual (A–Z, Backspace e Enter)
+  // Cria o teclado virtual (A-Z, Backspace, Enter)
   function createKeyboard() {
     const keys = [
       "A","B","C","D","E","F","G","H","I","J",
@@ -355,16 +358,22 @@ document.addEventListener("DOMContentLoaded", function() {
           }
           saveProgress();
           currentInput.focus();
+          checkHorizontalWord(parseInt(currentInput.dataset.row));
+          checkCompletion();
         } else if (key === "Enter") {
           const r = parseInt(currentInput.dataset.row);
           const c = parseInt(currentInput.dataset.col);
           autoAdvance(r, c);
+          checkHorizontalWord(r);
+          checkCompletion();
         } else {
           currentInput.value = key;
           saveProgress();
           const r = parseInt(currentInput.dataset.row);
           const c = parseInt(currentInput.dataset.col);
           autoAdvance(r, c);
+          checkHorizontalWord(r);
+          checkCompletion();
         }
       });
       keyboardContainer.appendChild(btn);
@@ -433,6 +442,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 
