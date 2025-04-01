@@ -81,22 +81,6 @@ nav button:hover {
   color: #fff;
 }
 
-/* Hero Section */
-.hero {
-  margin-top: 15px;
-  padding: 10px;
-}
-
-.hero h2 {
-  font-size: 1.2em;
-  color: #FF00FF;
-}
-
-.hero p {
-  font-size: 0.8em;
-  color: #00FFFF;
-}
-
 /* Container do Jogo */
 .game-container {
   display: flex;
@@ -145,7 +129,7 @@ nav button:hover {
   box-shadow: 0 0 8px #FF00FF;
 }
 
-/* Número da célula */
+/* Número da célula (para pistas) */
 .cell-number {
   position: absolute;
   top: 2px;
@@ -175,7 +159,7 @@ nav button:hover {
   color: #00FF00;
 }
 
-/* Dicas (Clues) – sem cabeçalhos explícitos */
+/* Dicas (Clues) – exibe o número e a pista */
 #clues-container {
   max-width: 350px;
   width: 100%;
@@ -291,6 +275,7 @@ footer {
     font-size: 0.8em;
   }
 }
+
 
 
 
