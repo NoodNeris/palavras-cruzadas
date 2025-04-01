@@ -16,7 +16,14 @@ document.addEventListener("DOMContentLoaded", function() {
   let currentPuzzle = null;
   let timerInterval = null;
   let startTime = null;
-  let currentInput = null; // Para rastrear a célula atualmente focada
+  let currentInput = null; // Célula atualmente focada
+
+  // Atualiza currentInput quando uma célula recebe foco
+  document.addEventListener("focusin", function(e) {
+    if (e.target.tagName === "INPUT") {
+      currentInput = e.target;
+    }
+  });
 
   // Animação do título
   anime({
@@ -27,55 +34,38 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Puzzle de teste – Tema "Frutas"
-  // Grid de 7 linhas x 10 colunas (apenas linhas com palavras horizontais serão ativas):
-  // Row 0,2,4,6: bloqueadas
-  // Row 1: BANANA, ativa de col 1 a 6
-  // Row 3: UVA, ativa de col 2 a 4
-  // Row 5: MELANCIA, ativa de col 1 a 8
+  // Puzzle de teste – Tema "Frutas" (apenas horizontais)
+  // Grid de 3 linhas x 10 colunas:
+  // Row 0: BANANA, ativa de col 2 a 7.
+  // Row 1: UVA, ativa de col 3 a 5.
+  // Row 2: MELANCIA, ativa de col 1 a 8.
   const puzzles = [
     {
       id: 0,
       name: "Puzzle Diário - Frutas",
       puzzleData: [
-        [0,0,0,0,0,0,0,0,0,0],                // Row 0: bloqueada
-        [0,1,1,1,1,1,1,0,0,0],                // Row 1: BANANA (6 letras) de col 1 a 6
-        [0,0,0,0,0,0,0,0,0,0],                // Row 2: bloqueada
-        [0,0,1,1,1,0,0,0,0,0],                // Row 3: UVA (3 letras) de col 2 a 4
-        [0,0,0,0,0,0,0,0,0,0],                // Row 4: bloqueada
-        [0,1,1,1,1,1,1,1,0,0],                // Row 5: MELANCIA (8 letras) de col 1 a 8
-        [0,0,0,0,0,0,0,0,0,0]                 // Row 6: bloqueada
+        [0,0,1,1,1,1,1,1,0,0],   // Row 0: BANANA
+        [0,0,0,1,1,1,0,0,0,0],     // Row 1: UVA
+        [0,1,1,1,1,1,1,1,0,0]      // Row 2: MELANCIA
       ],
-      // Matriz de números para as pistas, definida manualmente:
-      // Row 1 (BANANA) terá número 1 na coluna 1; Row 3 (UVA) terá número 6 na coluna 2; Row 5 (MELANCIA) terá número 11 na coluna 1.
+      // Matriz de números para as pistas (manual)
+      // Row 0: número 1 na coluna 2; Row 1: número 6 na coluna 3; Row 2: número 11 na coluna 1.
       clueNumbers: [
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,1,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,6,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,11,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0]
+        [0,0,1,0,0,0,0,0,0,0],
+        [0,0,0,6,0,0,0,0,0,0],
+        [0,11,0,0,0,0,0,0,0,0]
       ],
       // Solução:
-      // Row 1: BANANA (col 1 a 6)
-      // Row 3: UVA (col 2 a 4)
-      // Row 5: MELANCIA (col 1 a 8)
       solutionData: [
-        ["","","","","","","","","",""],
-        ["", "B", "A", "N", "A", "N", "A", "", "", ""],
-        ["","","","","","","","","",""],
-        ["", "", "U", "V", "A", "", "", "", "", ""],
-        ["","","","","","","","","",""],
-        ["", "M", "E", "L", "A", "N", "C", "I", "A", ""],
-        ["","","","","","","","","",""]
+        ["", "", "B", "A", "N", "A", "N", "A", "", ""],
+        ["", "", "", "U", "V", "A", "", "", "", ""],
+        ["", "M", "E", "L", "A", "N", "C", "I", "A", ""]
       ],
       horizontalClues: [
         "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (número 1)
         "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (número 6)
         "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (número 11)
       ]
-      // Sem vertical, então verticalClues não é necessário.
     }
   ];
 
@@ -108,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid, insere os inputs, números e carrega o progresso
+  // Gera o grid, insere inputs e números; carrega o progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -133,13 +123,9 @@ document.addEventListener("DOMContentLoaded", function() {
           input.setAttribute('maxlength', '1');
           input.dataset.row = r;
           input.dataset.col = c;
-          input.addEventListener('focus', function() {
-            currentInput = input;
-          });
           input.addEventListener('input', function() {
             input.value = input.value.toUpperCase();
             saveProgress();
-            // Auto-avanço horizontal
             autoAdvance(r, c);
             checkHorizontalWord(r);
             checkCompletion();
@@ -179,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
     if (blockComplete) {
-      // Se houver outro bloco na mesma linha depois do bloqueio
+      // Procura próximo bloco na mesma linha
       for (let c = endCol + 1; c < currentPuzzle.puzzleData[row].length; c++) {
         if (currentPuzzle.puzzleData[row][c] === 1) {
           const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -189,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       }
-      // Se não houver, pula para o primeiro bloco ativo da linha seguinte
+      // Se não houver, pula para o primeiro campo ativo da linha seguinte
       if (row + 1 < currentPuzzle.puzzleData.length) {
         for (let c = 0; c < currentPuzzle.puzzleData[row + 1].length; c++) {
           if (currentPuzzle.puzzleData[row + 1][c] === 1) {
@@ -209,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat contínuo: se Backspace em célula vazia, volta para a célula anterior no mesmo bloco e limpa
+  // Auto-retreat contínuo: se Backspace em célula vazia, retorna para a célula anterior do mesmo bloco e limpa
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -299,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com a numeração definida manualmente
+  // Exibe as pistas com os números definidos manualmente
   function displayClues() {
     horizontalList.innerHTML = `
       <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
@@ -345,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Cria o teclado virtual
+  // Cria o teclado virtual (letras A-Z, Backspace e Enter)
   function createKeyboard() {
     const keys = [
       "A","B","C","D","E","F","G","H","I","J",
@@ -361,7 +347,6 @@ document.addEventListener("DOMContentLoaded", function() {
       btn.addEventListener('click', function() {
         if (!currentInput) return;
         if (key === "Backspace") {
-          // Simula o Backspace: se o campo atual estiver vazio, chama auto-retreat
           if (currentInput.value === "") {
             const r = parseInt(currentInput.dataset.row);
             const c = parseInt(currentInput.dataset.col);
@@ -372,12 +357,10 @@ document.addEventListener("DOMContentLoaded", function() {
           saveProgress();
           currentInput.focus();
         } else if (key === "Enter") {
-          // Se Enter, simula um auto-avanço horizontal
           const r = parseInt(currentInput.dataset.row);
           const c = parseInt(currentInput.dataset.col);
           autoAdvance(r, c);
         } else {
-          // Insere a letra e chama auto-avanço
           currentInput.value = key;
           saveProgress();
           const r = parseInt(currentInput.dataset.row);
@@ -395,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function() {
     currentPuzzle = puzzles[selectedIndex];
     generateGrid();
     displayClues();
-    gridContainer.style.display = "grid";
+    document.getElementById('grid-container').style.display = "grid";
     document.getElementById('clues-container').style.display = "block";
     createKeyboard();
     startTimer();
@@ -451,6 +434,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 

@@ -97,6 +97,7 @@ nav button:hover {
   margin: 0 auto;
 }
 
+/* Grid: 3 linhas x 10 colunas */
 #grid-container {
   display: grid;
   grid-template-columns: repeat(10, 50px);
@@ -104,7 +105,6 @@ nav button:hover {
   background: #333;
   padding: 10px;
   margin: 10px;
-  position: relative;
   border: 2px solid #00FFFF;
 }
 
@@ -191,7 +191,9 @@ nav button:hover {
 #keyboard-container {
   margin: 20px auto;
   text-align: center;
+  display: none;
 }
+
 .key {
   display: inline-block;
   margin: 5px;
@@ -242,7 +244,6 @@ nav button:hover {
   cursor: pointer;
   color: #FF00FF;
 }
-
 .close:hover {
   color: #00FFFF;
 }
@@ -264,12 +265,10 @@ footer {
   #grid-container {
     grid-template-columns: repeat(10, 40px);
   }
-  
   .cell {
     width: 40px;
     height: 40px;
   }
-  
   .cell input {
     font-size: 1em;
   }
@@ -283,21 +282,17 @@ footer {
   header h1 {
     font-size: 1.5em;
   }
-  
   nav button {
     padding: 8px 12px;
     font-size: 0.7em;
   }
-  
   #grid-container {
     grid-template-columns: repeat(10, 35px);
   }
-  
   .cell {
     width: 35px;
     height: 35px;
   }
-  
   .cell input {
     font-size: 0.8em;
   }
@@ -306,6 +301,7 @@ footer {
     font-size: 0.6em;
   }
 }
+
 
 
 
