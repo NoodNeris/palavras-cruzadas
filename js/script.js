@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Seleção de elementos
   const gridContainer = document.getElementById('grid-container');
   const horizontalList = document.getElementById('horizontal-list');
   const messageDiv = document.getElementById('message');
@@ -12,20 +11,18 @@ document.addEventListener("DOMContentLoaded", function() {
   const instructionsBtn = document.getElementById('instructionsBtn');
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
-
+  
   let currentPuzzle = null;
   let timerInterval = null;
   let startTime = null;
-  let currentInput = null; // Célula atualmente focada
+  let currentInput = null;
 
-  // Atualiza currentInput quando um input recebe foco
   document.addEventListener("focusin", function(e) {
     if (e.target.tagName === "INPUT") {
       currentInput = e.target;
     }
   });
 
-  // Animação do título
   anime({
     targets: '#title',
     translateY: [-50, 0],
@@ -34,11 +31,10 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Puzzle de teste – Tema "Frutas"
-  // Grid de 3 linhas x 10 colunas:
-  // Row 0: BANANA, ativa de col 2 a 7.
-  // Row 1: UVA, ativa de col 3 a 5.
-  // Row 2: MELANCIA, ativa de col 1 a 8.
+  // Puzzle com tema "Frutas"
+  // Row 0: BANANA ativa de col 2 a 7
+  // Row 1: UVA ativa de col 3 a 5
+  // Row 2: MELANCIA ativa de col 1 a 8 (com letra final "A")
   const puzzles = [
     {
       id: 0,
@@ -48,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
         [0,0,0,1,1,1,0,0,0,0],
         [0,1,1,1,1,1,1,1,0,0]
       ],
-      // Matriz de números definida manualmente: 1 na Row 0 col2, 2 na Row 1 col3, 3 na Row 2 col1.
+      // Números definidos manualmente: 1 na Row 0 col2, 2 na Row 1 col3, 3 na Row 2 col1.
       clueNumbers: [
         [0,0,1,0,0,0,0,0,0,0],
         [0,0,0,2,0,0,0,0,0,0],
@@ -57,16 +53,16 @@ document.addEventListener("DOMContentLoaded", function() {
       // Solução:
       // Row 0: BANANA -> B, A, N, A, N, A
       // Row 1: UVA -> U, V, A
-      // Row 2: MELANCIA -> M, E, L, A, N, C, I, A (com a letra final "A")
+      // Row 2: MELANCIA -> M, E, L, A, N, C, I, A
       solutionData: [
         ["", "", "B", "A", "N", "A", "N", "A", "", ""],
         ["", "", "", "U", "V", "A", "", "", "", ""],
         ["", "M", "E", "L", "A", "N", "C", "I", "A", ""]
       ],
       horizontalClues: [
-        "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (número 1)
-        "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (número 2)
-        "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (número 3)
+        "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (1)
+        "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (2)
+        "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (3)
       ]
     }
   ];
@@ -99,7 +95,6 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid e insere inputs e números; carrega o progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -147,7 +142,6 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avanço horizontal
   function autoAdvance(row, col) {
     let startCol = col;
     while (startCol > 0 && currentPuzzle.puzzleData[row][startCol - 1] === 1) {
@@ -166,7 +160,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
     if (blockComplete) {
-      // Próximo bloco na mesma linha
       for (let c = endCol + 1; c < currentPuzzle.puzzleData[row].length; c++) {
         if (currentPuzzle.puzzleData[row][c] === 1) {
           const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -176,7 +169,6 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       }
-      // Se não houver, pula para o primeiro campo ativo da linha seguinte
       if (row + 1 < currentPuzzle.puzzleData.length) {
         for (let c = 0; c < currentPuzzle.puzzleData[row + 1].length; c++) {
           if (currentPuzzle.puzzleData[row + 1][c] === 1) {
@@ -196,7 +188,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat contínuo
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -227,7 +218,6 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInp) targetInp.focus();
   }
 
-  // Verifica o bloco horizontal na linha 'row'
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -286,7 +276,6 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com os números definidos (1, 2, 3)
   function displayClues() {
     horizontalList.innerHTML = `
       <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
@@ -332,7 +321,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Cria o teclado virtual (A-Z, Backspace, Enter)
   function createKeyboard() {
     const keys = [
       "A","B","C","D","E","F","G","H","I","J",
@@ -385,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function() {
     currentPuzzle = puzzles[selectedIndex];
     generateGrid();
     displayClues();
-    document.getElementById('grid-container').style.display = "grid";
+    gridContainer.style.display = "grid";
     document.getElementById('clues-container').style.display = "block";
     createKeyboard();
     startTimer();
@@ -441,6 +429,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 

@@ -6,9 +6,7 @@
   <title>Palavras Cruzadas - Frutas</title>
   <!-- Fonte Gamer: Press Start 2P -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <!-- CSS principal -->
   <link rel="stylesheet" href="css/style.css">
-  <!-- Biblioteca de animação -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
@@ -19,7 +17,6 @@
       <p id="welcome">Momento fruta do dia! Complete a palavra cruzada e divirta-se!</p>
       <div class="header-controls">
         <select id="puzzleSelect">
-          <!-- Apenas um puzzle de teste -->
           <option value="0">Puzzle Diário</option>
         </select>
         <span id="timer">00:00</span>
@@ -35,7 +32,6 @@
 
   <main>
     <div class="game-container">
-      <!-- O grid e as pistas permanecem ocultos até o jogo iniciar -->
       <section id="grid-container" style="display: none;"></section>
       <div id="message"></div>
       <aside id="clues-container" style="display: none;">
@@ -43,12 +39,10 @@
           <ul id="horizontal-list"></ul>
         </div>
       </aside>
-      <!-- Teclado Virtual -->
       <div id="keyboard-container" style="display: none;"></div>
     </div>
   </main>
 
-  <!-- Modal de Instruções -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
@@ -69,6 +63,7 @@
   <script src="js/script.js"></script>
 </body>
 </html>
+
 
 
 

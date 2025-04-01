@@ -165,7 +165,7 @@ nav button:hover {
   color: #00FF00;
 }
 
-/* Dicas (Clues) – exibe numeração e pista */
+/* Dicas (Clues) */
 #clues-container {
   max-width: 350px;
   width: 100%;
@@ -301,6 +301,7 @@ footer {
     font-size: 0.6em;
   }
 }
+
 
 
 
