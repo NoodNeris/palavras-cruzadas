@@ -32,14 +32,16 @@
     </div>
   </header>
 
+  <!-- Abaixo, a homepage exibe o tema e uma mensagem chamativa -->
   <main>
     <div class="game-container">
-      <section id="grid-container">
+      <!-- O grid inicia oculto para não mostrar campos vazios -->
+      <section id="grid-container" style="display: none;">
         <!-- O grid será gerado via JavaScript -->
       </section>
       <!-- Div para mensagens de feedback -->
       <div id="message"></div>
-      <!-- Bloco de dicas (inicialmente oculto) -->
+      <!-- Bloco de pistas (inicialmente oculto) -->
       <aside id="clues-container" style="display: none;">
         <div class="clues-section">
           <ul id="horizontal-list"></ul>
@@ -60,7 +62,7 @@
         Preencha as letras nas células para formar as palavras com base nas pistas.<br>
         As letras são inseridas da esquerda para a direita em cada palavra.<br>
         Use as setas do teclado ou clique nas células para navegar.<br>
-        Se pressionar Backspace em uma célula vazia, o foco volta para a célula anterior da mesma palavra, permitindo deleção contínua.<br>
+        Se pressionar Backspace em uma célula vazia, o foco volta para a célula anterior do mesmo bloco, permitindo deleção contínua.<br>
         Seu progresso é salvo automaticamente!
       </p>
     </div>
@@ -72,6 +74,7 @@
   <script src="js/script.js"></script>
 </body>
 </html>
+
 
 
 

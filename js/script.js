@@ -22,7 +22,13 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Puzzle com tema "Culinária" – números definidos manualmente
+  // Puzzle com tema "Culinária"
+  // Grid 5x5: Linhas 0, 2 e 4 são palavras horizontais; linhas 1 e 3 contêm apenas a célula central.
+  // Solução:
+  // Row 0 (horizontal): "PASTA" (P, A, S, T, A) – center: S
+  // Row 2 (horizontal): "SABOR" (S, A, B, O, R) – center: B
+  // Row 4 (horizontal): "CARNE" (C, A, R, N, E) – center: R
+  // Vertical (coluna 2): Definida manualmente para ficar SABOR: S, A, B, O, R.
   const puzzles = [
     {
       id: 0,
@@ -34,28 +40,30 @@ document.addEventListener("DOMContentLoaded", function() {
         [0, 0, 1, 0, 0],
         [1, 1, 1, 1, 1]
       ],
-      // Matriz de números para as células iniciais de cada palavra:
+      // Para exibir as pistas com os números corretos, definimos:
+      // Horizontal: Row 0 = número 1, Row 2 = número 6, Row 4 = número 11.
+      // Vertical: A célula única de row1 col2 será considerada número 3.
       clueNumbers: [
         [1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
+        [0, 0, 3, 0, 0],
         [6, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [11, 0, 0, 0, 0]
       ],
       solutionData: [
-        ["M", "A", "S", "S", "A"],  // MASSA
+        ["P", "A", "S", "T", "A"],  // PASTA
         ["",  "",  "A", "",  ""],
         ["S", "A", "B", "O", "R"],  // SABOR
         ["",  "",  "O", "",  ""],
         ["C", "A", "R", "N", "E"]   // CARNE
       ],
       horizontalClues: [
-        "Ingrediente principal para pães e pizzas",  // MASSA, número 1
-        "O que torna os pratos saborosos",            // SABOR, número 6
-        "Fonte de proteína"                           // CARNE, número 11
+        "Ingrediente usado em diversos pratos",   // número 1 (PASTA)
+        "O que define o paladar",                    // número 6 (SABOR)
+        "Fonte de proteína",                         // número 11 (CARNE)
       ],
       verticalClues: [
-        "Palavra que resume o paladar dos pratos"      // SABOR vertical, número 3 (a célula de início da vertical será definida pela lógica)
+        "Palavra que resume o sabor dos pratos"      // número 3 (vertical)
       ]
     }
   ];
@@ -64,13 +72,12 @@ document.addEventListener("DOMContentLoaded", function() {
   let timerInterval = null;
   let startTime = null;
 
-  // Usa a matriz de números definida no puzzle (se existir) ou calcula automaticamente
+  // Usa a matriz de números definida manualmente ou calcula automaticamente
   function getNumbers(puzzleData) {
     if (currentPuzzle.clueNumbers) return currentPuzzle.clueNumbers;
     return computeNumbers(puzzleData);
   }
 
-  // (Mantemos a função computeNumbers caso não haja números definidos manualmente)
   function computeNumbers(puzzleData) {
     const numbers = [];
     let num = 1;
@@ -94,9 +101,11 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid; insere inputs e números; carrega o progresso salvo
+  // Gera o grid, insere inputs e números; carrega progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
+    // Exibe o grid (antes oculto na homepage)
+    gridContainer.style.display = "grid";
     const numbers = getNumbers(currentPuzzle.puzzleData);
     for (let r = 0; r < currentPuzzle.puzzleData.length; r++) {
       for (let c = 0; c < currentPuzzle.puzzleData[r].length; c++) {
@@ -121,7 +130,12 @@ document.addEventListener("DOMContentLoaded", function() {
           input.addEventListener('input', function() {
             input.value = input.value.toUpperCase();
             saveProgress();
-            autoAdvance(r, c);
+            // Se estiver em uma célula de linha 1 ou 3 (vertical única), usa auto-avanço vertical; senão, horizontal
+            if (r === 1 || r === 3) {
+              autoAdvanceVertical(r, c);
+            } else {
+              autoAdvance(r, c);
+            }
             checkHorizontalWord(r);
             checkVerticalWords();
             checkCompletion();
@@ -142,9 +156,9 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avanço aprimorado: move para o próximo bloco da mesma linha ou para a próxima linha
+  // Auto-avanço horizontal: move para o próximo célula do mesmo bloco; se completo, passa para o próximo bloco ou linha
   function autoAdvance(row, col) {
-    // Define o bloco atual: da primeira célula contígua à última
+    // Define o bloco horizontal atual
     let start = col;
     while (start > 0 && currentPuzzle.puzzleData[row][start - 1] === 1) {
       start--;
@@ -153,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function() {
     while (end < currentPuzzle.puzzleData[row].length - 1 && currentPuzzle.puzzleData[row][end + 1] === 1) {
       end++;
     }
-    // Verifica se o bloco está completamente preenchido
+    // Se o bloco estiver completamente preenchido, procura o próximo bloco na mesma linha
     let blockComplete = true;
     for (let c = start; c <= end; c++) {
       const inp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -163,7 +177,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
     if (blockComplete) {
-      // Procura próximo bloco na mesma linha (após um 0)
       for (let c = end + 1; c < currentPuzzle.puzzleData[row].length; c++) {
         if (currentPuzzle.puzzleData[row][c] === 1) {
           const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -173,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       }
-      // Se não houver, passa para a próxima linha (primeiro bloco)
+      // Se não houver outro bloco na mesma linha, passa para a próxima linha (primeiro bloco)
       if (row + 1 < currentPuzzle.puzzleData.length) {
         for (let c = 0; c < currentPuzzle.puzzleData[row + 1].length; c++) {
           if (currentPuzzle.puzzleData[row + 1][c] === 1) {
@@ -186,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
     } else {
-      // Se o bloco não estiver completo, move para a próxima célula do bloco
+      // Caso o bloco não esteja completo, avança para a próxima célula dentro do mesmo bloco
       if (col + 1 <= end) {
         const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col + 1}"]`);
         if (nextInp) nextInp.focus();
@@ -194,7 +207,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat contínuo: se Backspace em célula vazia, move para a célula anterior e limpa
+  // Auto-avanço vertical: para células isoladas (linhas 1 e 3), avança para a próxima célula ativa abaixo na mesma coluna
+  function autoAdvanceVertical(row, col) {
+    for (let r = row + 1; r < currentPuzzle.puzzleData.length; r++) {
+      if (currentPuzzle.puzzleData[r][col] === 1) {
+        const nextInp = document.querySelector(`.cell input[data-row="${r}"][data-col="${col}"]`);
+        if (nextInp) {
+          nextInp.focus();
+          return;
+        }
+      }
+    }
+  }
+
+  // Auto-retreat contínuo: se Backspace em célula vazia, move para a célula anterior do mesmo bloco e limpa
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -225,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInp) targetInp.focus();
   }
 
-  // Verifica o bloco horizontal (palavra) na linha 'row'
+  // Verifica o bloco horizontal na linha 'row'
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -260,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Verifica as palavras verticais para cada coluna
+  // Verifica os blocos verticais em cada coluna
   function checkVerticalWords() {
     const cols = currentPuzzle.puzzleData[0].length;
     for (let c = 0; c < cols; c++) {
@@ -322,13 +348,8 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com os números corretos
+  // Exibe as pistas com numeração clara
   function displayClues() {
-    // Para este puzzle, assumimos:
-    // - Horizontal: linha 0: número 1, linha 2: número 6, linha 4: número 11
-    // - Vertical: a vertical (coluna 2) tem início na linha 1: número 3
-    horizontalList.innerHTML = '';
-    verticalList.innerHTML = '';
     horizontalList.innerHTML = `
       <li>1: ${currentPuzzle.horizontalClues[0]}</li>
       <li>6: ${currentPuzzle.horizontalClues[1]}</li>
@@ -379,7 +400,7 @@ document.addEventListener("DOMContentLoaded", function() {
     currentPuzzle = puzzles[selectedIndex];
     generateGrid();
     displayClues();
-    // Exibe as pistas somente após iniciar o jogo
+    // Exibe o bloco de pistas somente após iniciar o jogo
     document.getElementById('clues-container').style.display = "block";
     startTimer();
     clearMessage();
@@ -431,9 +452,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (event.target === modal) modal.style.display = 'none';
   });
 
-  // (Opcional) Para iniciar automaticamente ao carregar a página, descomente a linha abaixo:
+  // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 
