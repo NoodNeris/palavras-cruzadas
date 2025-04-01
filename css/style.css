@@ -1,22 +1,31 @@
-/* Reset básico e definição de fonte */
+/* Reset básico e fonte padrão */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  background: #f0f0f0;
+  font-family: 'Roboto', sans-serif;
+  background: #f7f7f7;
   color: #333;
+  line-height: 1.6;
 }
 
 /* Cabeçalho */
 header {
-  background: #333;
-  color: white;
-  padding: 20px;
+  background: #3f51b5;
+  color: #fff;
+  padding: 20px 10px;
   text-align: center;
+}
+
+.container-header {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 header h1 {
@@ -30,13 +39,13 @@ nav {
 
 nav button {
   background: #ff5722;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 10px 20px;
-  margin: 0 5px;
-  cursor: pointer;
+  padding: 10px 15px;
+  margin: 5px;
   font-size: 1em;
   border-radius: 5px;
+  cursor: pointer;
   transition: background 0.3s ease;
 }
 
@@ -49,7 +58,9 @@ nav button:hover {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Grid de Palavras Cruzadas */
@@ -57,20 +68,21 @@ nav button:hover {
   display: grid;
   grid-template-columns: repeat(10, 40px);
   grid-gap: 2px;
-  margin: 20px;
+  background: #ddd;
+  padding: 10px;
+  margin: 10px;
 }
 
 .cell {
-  background: white;
+  background: #fff;
   border: 1px solid #ccc;
   width: 40px;
   height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2em;
-  cursor: pointer;
+  text-align: center;
+  line-height: 40px;
+  font-size: 1.1em;
   transition: background 0.3s ease;
+  cursor: pointer;
 }
 
 .cell:focus {
@@ -78,42 +90,49 @@ nav button:hover {
   background: #ffeb3b;
 }
 
-/* Células bloqueadas (preenchidas) */
 .cell.blocked {
   background: #333;
   cursor: default;
 }
 
-/* Container de Dicas */
+/* Dicas (Clues) */
 #clues-container {
-  max-width: 300px;
-  margin: 20px;
+  max-width: 350px;
+  width: 100%;
+  margin: 10px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-#clues-container h2 {
-  margin-bottom: 10px;
-}
-
-#clues-container ul {
-  list-style: none;
+.clues-section {
   margin-bottom: 20px;
 }
 
-#clues-container li {
-  padding: 5px 0;
-  border-bottom: 1px solid #ccc;
+.clues-section h2 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
 }
 
-/* Modal de Instruções */
+.clues-section ul {
+  list-style: none;
+}
+
+.clues-section li {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Modal */
 .modal {
-  display: none; /* Escondido por padrão */
+  display: none;
   position: fixed;
   z-index: 100;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
   background-color: rgba(0,0,0,0.5);
 }
 
@@ -123,29 +142,71 @@ nav button:hover {
   padding: 20px;
   border-radius: 5px;
   max-width: 500px;
+  position: relative;
   text-align: center;
 }
 
 .close {
-  color: #aaa;
-  float: right;
+  position: absolute;
+  top: 10px;
+  right: 15px;
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
+  color: #999;
 }
 
-.close:hover,
-.close:focus {
-  color: black;
+.close:hover {
+  color: #333;
 }
 
 /* Rodapé */
 footer {
+  background: #3f51b5;
+  color: #fff;
   text-align: center;
-  padding: 10px;
-  background: #333;
-  color: white;
+  padding: 10px 0;
   position: fixed;
   bottom: 0;
   width: 100%;
 }
+
+/* Media Queries para Responsividade */
+@media (max-width: 768px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #grid-container {
+    grid-template-columns: repeat(8, 40px);
+  }
+  
+  #clues-container {
+    max-width: 100%;
+    margin: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 2em;
+  }
+  
+  nav button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+  
+  #grid-container {
+    grid-template-columns: repeat(6, 35px);
+  }
+  
+  .cell {
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 1em;
+  }
+}
+

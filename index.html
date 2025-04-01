@@ -3,38 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palavras Cruzadas em Inglês</title>
+  <title>Palavras Cruzadas</title>
+  <!-- Google Fonts (opcional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- CSS principal -->
   <link rel="stylesheet" href="css/style.css">
-  <!-- Biblioteca de animação: anime.js -->
+  <!-- Biblioteca de animação -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
   <header>
-    <h1 id="title">Palavras Cruzadas em Inglês</h1>
-    <nav>
-      <button id="startGameBtn">Iniciar Jogo</button>
-      <button id="instructionsBtn">Instruções</button>
-    </nav>
+    <div class="container-header">
+      <h1 id="title">Palavras Cruzadas</h1>
+      <nav>
+        <button id="startGameBtn">Iniciar Jogo</button>
+        <button id="instructionsBtn">Instruções</button>
+      </nav>
+    </div>
   </header>
+
   <main>
     <div class="game-container">
-      <div id="grid-container">
-        <!-- A grade do puzzle será gerada dinamicamente -->
-      </div>
-      <div id="clues-container">
-        <div id="horizontal-clues">
+      <section id="grid-container">
+        <!-- A grade será gerada via JavaScript -->
+      </section>
+      <aside id="clues-container">
+        <div class="clues-section">
           <h2>Dicas Horizontais</h2>
-          <ul id="horizontal-list">
-            <!-- Lista de dicas horizontais -->
-          </ul>
+          <ul id="horizontal-list"></ul>
         </div>
-        <div id="vertical-clues">
+        <div class="clues-section">
           <h2>Dicas Verticais</h2>
-          <ul id="vertical-list">
-            <!-- Lista de dicas verticais -->
-          </ul>
+          <ul id="vertical-list"></ul>
         </div>
-      </div>
+      </aside>
     </div>
   </main>
 
@@ -43,14 +45,15 @@
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
       <h2>Como Jogar</h2>
-      <p>Preencha as letras nas células para formar as palavras correspondentes às dicas. Use as setas do teclado ou clique nas células para navegar. Boa sorte!</p>
+      <p>Preencha as letras nas células para formar as palavras de acordo com as dicas. Navegue com o teclado ou clicando nas células. Boa sorte!</p>
     </div>
   </div>
 
   <footer>
-    <p>&copy; 2025 NoodNeris</p>
+    <p>&copy; 2025 NoodNeris. Todos os direitos reservados.</p>
   </footer>
   <script src="js/script.js"></script>
 </body>
 </html>
+
 

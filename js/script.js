@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Seleção de elementos
+  // Elementos principais
   const gridContainer = document.getElementById('grid-container');
   const horizontalList = document.getElementById('horizontal-list');
   const verticalList = document.getElementById('vertical-list');
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
 
-  // Animação do título usando anime.js
+  // Animação do título
   anime({
     targets: '#title',
     translateY: [-50, 0],
@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Dados do puzzle (Exemplo simples 10x10)
-  // 0 = célula bloqueada (não jogável), 1 = célula jogável
+  // Dados de exemplo para o puzzle
+  // 1 = célula jogável, 0 = célula bloqueada
   const puzzleData = [
     [1,1,1,0,1,1,1,1,1,1],
     [1,0,1,1,1,0,1,0,1,1],
@@ -32,36 +32,32 @@ document.addEventListener("DOMContentLoaded", function() {
     [1,1,1,1,1,1,1,1,1,1]
   ];
 
-  // Exemplos de dicas (apenas ilustrativas)
+  // Exemplos de dicas
   const horizontalClues = [
-    "1. Palavra horizontal 1",
-    "3. Palavra horizontal 2",
-    "5. Palavra horizontal 3"
+    "1. Exemplo de palavra horizontal 1",
+    "3. Exemplo de palavra horizontal 2",
+    "5. Exemplo de palavra horizontal 3"
   ];
-
   const verticalClues = [
-    "2. Palavra vertical 1",
-    "4. Palavra vertical 2",
-    "6. Palavra vertical 3"
+    "2. Exemplo de palavra vertical 1",
+    "4. Exemplo de palavra vertical 2",
+    "6. Exemplo de palavra vertical 3"
   ];
 
-  // Função para gerar a grade do puzzle
+  // Função que gera a grade do puzzle
   function generateGrid() {
-    gridContainer.innerHTML = ''; // Limpa a grade anterior
+    gridContainer.innerHTML = '';
     for (let row = 0; row < puzzleData.length; row++) {
       for (let col = 0; col < puzzleData[row].length; col++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
         cell.dataset.row = row;
         cell.dataset.col = col;
-
+        
         if (puzzleData[row][col] === 0) {
-          // Célula bloqueada
           cell.classList.add('blocked');
-          cell.textContent = ''; // Você pode colocar um símbolo se preferir
           cell.contentEditable = false;
         } else {
-          // Célula jogável (para inserir letras)
           cell.setAttribute('contenteditable', 'true');
           cell.addEventListener('click', function() {
             anime({
@@ -72,13 +68,12 @@ document.addEventListener("DOMContentLoaded", function() {
             });
           });
         }
-
         gridContainer.appendChild(cell);
       }
     }
   }
 
-  // Função para exibir as dicas
+  // Função que exibe as dicas
   function displayClues() {
     horizontalList.innerHTML = '';
     verticalList.innerHTML = '';
@@ -106,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-  // Configura o modal de instruções
+  // Eventos para o Modal de Instruções
   instructionsBtn.addEventListener('click', function() {
     modal.style.display = 'block';
     anime({
@@ -117,18 +112,15 @@ document.addEventListener("DOMContentLoaded", function() {
       easing: 'easeOutExpo'
     });
   });
-
-  // Fecha o modal ao clicar no "x"
   closeModal.addEventListener('click', function() {
     modal.style.display = 'none';
   });
-
-  // Fecha o modal se clicar fora dele
   window.addEventListener('click', function(event) {
     if (event.target === modal) {
       modal.style.display = 'none';
     }
   });
 });
+
 
   
