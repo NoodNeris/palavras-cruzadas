@@ -12,13 +12,13 @@ document.addEventListener("DOMContentLoaded", function() {
   const instructionsBtn = document.getElementById('instructionsBtn');
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
-  
+
   let currentPuzzle = null;
   let timerInterval = null;
   let startTime = null;
   let currentInput = null; // Célula atualmente focada
 
-  // Atualiza currentInput quando uma célula recebe foco
+  // Atualiza currentInput ao receber foco
   document.addEventListener("focusin", function(e) {
     if (e.target.tagName === "INPUT") {
       currentInput = e.target;
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Puzzle de teste – Tema "Frutas" (apenas horizontais)
+  // Puzzle de teste – Tema "Frutas"
   // Grid de 3 linhas x 10 colunas:
   // Row 0: BANANA, ativa de col 2 a 7.
   // Row 1: UVA, ativa de col 3 a 5.
@@ -44,18 +44,20 @@ document.addEventListener("DOMContentLoaded", function() {
       id: 0,
       name: "Puzzle Diário - Frutas",
       puzzleData: [
-        [0,0,1,1,1,1,1,1,0,0],   // Row 0: BANANA
-        [0,0,0,1,1,1,0,0,0,0],     // Row 1: UVA
-        [0,1,1,1,1,1,1,1,0,0]      // Row 2: MELANCIA
+        [0,0,1,1,1,1,1,1,0,0],
+        [0,0,0,1,1,1,0,0,0,0],
+        [0,1,1,1,1,1,1,1,0,0]
       ],
-      // Matriz de números para as pistas (manual)
-      // Row 0: número 1 na coluna 2; Row 1: número 6 na coluna 3; Row 2: número 11 na coluna 1.
+      // Matriz de números para as pistas (em ordem: 1, 2, 3)
       clueNumbers: [
         [0,0,1,0,0,0,0,0,0,0],
-        [0,0,0,6,0,0,0,0,0,0],
-        [0,11,0,0,0,0,0,0,0,0]
+        [0,0,0,2,0,0,0,0,0,0],
+        [0,3,0,0,0,0,0,0,0,0]
       ],
       // Solução:
+      // Row 0: BANANA (B A N A N A)
+      // Row 1: UVA (U V A)
+      // Row 2: MELANCIA (M E L A N C I A)
       solutionData: [
         ["", "", "B", "A", "N", "A", "N", "A", "", ""],
         ["", "", "", "U", "V", "A", "", "", "", ""],
@@ -63,8 +65,8 @@ document.addEventListener("DOMContentLoaded", function() {
       ],
       horizontalClues: [
         "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (número 1)
-        "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (número 6)
-        "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (número 11)
+        "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (número 2)
+        "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (número 3)
       ]
     }
   ];
@@ -98,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid, insere inputs e números; carrega o progresso salvo
+  // Gera o grid, insere os inputs e números; carrega o progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -285,12 +287,12 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com os números definidos manualmente
+  // Exibe as pistas com numeração definida manualmente (em ordem 1,2,3)
   function displayClues() {
     horizontalList.innerHTML = `
       <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
-      <li>6: Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.</li>
-      <li>11: Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas.</li>
+      <li>2: Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.</li>
+      <li>3: Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas.</li>
     `;
   }
 
@@ -331,7 +333,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Cria o teclado virtual (letras A-Z, Backspace e Enter)
+  // Cria o teclado virtual (A-Z, Backspace, Enter)
   function createKeyboard() {
     const keys = [
       "A","B","C","D","E","F","G","H","I","J",
@@ -434,6 +436,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 
