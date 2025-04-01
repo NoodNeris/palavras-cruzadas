@@ -34,7 +34,13 @@ header h1 {
 #theme {
   font-size: 0.8em;
   color: #FF00FF;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+#welcome {
+  font-size: 0.7em;
+  color: #00FFFF;
+  margin-bottom: 15px;
 }
 
 .header-controls {
@@ -84,8 +90,8 @@ nav button:hover {
 /* Container do Jogo */
 .game-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -159,7 +165,7 @@ nav button:hover {
   color: #00FF00;
 }
 
-/* Dicas (Clues) – exibe o número e a pista */
+/* Dicas (Clues) – exibe numeração e pista */
 #clues-container {
   max-width: 350px;
   width: 100%;
@@ -233,11 +239,6 @@ footer {
 
 /* Responsividade */
 @media (max-width: 768px) {
-  .game-container {
-    flex-direction: column;
-    align-items: center;
-  }
-  
   #grid-container {
     grid-template-columns: repeat(5, 40px);
   }
@@ -275,6 +276,7 @@ footer {
     font-size: 0.8em;
   }
 }
+
 
 
 

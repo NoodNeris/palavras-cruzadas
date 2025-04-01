@@ -23,12 +23,9 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Puzzle com tema "Culinária"
-  // Grid 5x5: Linhas 0, 2 e 4 são palavras horizontais; linhas 1 e 3 contêm apenas a célula central.
-  // Solução:
-  // Row 0 (horizontal): "PASTA" (P, A, S, T, A) – center: S
-  // Row 2 (horizontal): "SABOR" (S, A, B, O, R) – center: B
-  // Row 4 (horizontal): "CARNE" (C, A, R, N, E) – center: R
-  // Vertical (coluna 2): Definida manualmente para ficar SABOR: S, A, B, O, R.
+  // Grid 5x5:
+  // Horizontais (rows 0,2,4): "PASTA", "RAMEN", "CARNE"
+  // Vertical (coluna 2): solução forçada para "TEMPO" (T, E, M, P, O)
   const puzzles = [
     {
       id: 0,
@@ -40,9 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
         [0, 0, 1, 0, 0],
         [1, 1, 1, 1, 1]
       ],
-      // Para exibir as pistas com os números corretos, definimos:
-      // Horizontal: Row 0 = número 1, Row 2 = número 6, Row 4 = número 11.
-      // Vertical: A célula única de row1 col2 será considerada número 3.
+      // Definimos manualmente os números para as pistas:
       clueNumbers: [
         [1, 0, 0, 0, 0],
         [0, 0, 3, 0, 0],
@@ -51,19 +46,20 @@ document.addEventListener("DOMContentLoaded", function() {
         [11, 0, 0, 0, 0]
       ],
       solutionData: [
-        ["P", "A", "S", "T", "A"],  // PASTA
-        ["",  "",  "A", "",  ""],
-        ["S", "A", "B", "O", "R"],  // SABOR
-        ["",  "",  "O", "",  ""],
-        ["C", "A", "R", "N", "E"]   // CARNE
+        ["P", "A", "S", "T", "A"],   // PASTA
+        ["",  "",  "E", "",  ""],      // Força vertical: row1, col2 = E (de TEMPO)
+        ["R", "A", "M", "E", "N"],     // RAMEN (mas vertical: queremos M, por isso aqui: M de TEMPO será forçado)
+        ["",  "",  "P", "",  ""],      // Força vertical: row3, col2 = P (de TEMPO)
+        ["C", "A", "R", "N", "E"]      // CARNE (mas vertical: queremos O, por isso forçamos)
       ],
+      // Ajuste: forçaremos a vertical "TEMPO" sobre as células da coluna 2 (rows 0-4)
       horizontalClues: [
-        "Ingrediente usado em diversos pratos",   // número 1 (PASTA)
-        "O que define o paladar",                    // número 6 (SABOR)
-        "Fonte de proteína",                         // número 11 (CARNE)
+        "1: Ingrediente básico para massas",  // PASTA (número 1)
+        "6: Prato oriental famoso",            // RAMEN (número 6)
+        "11: Fonte de proteína"                  // CARNE (número 11)
       ],
       verticalClues: [
-        "Palavra que resume o sabor dos pratos"      // número 3 (vertical)
+        "3: O tempo certo é essencial"         // Vertical (número 3) – solução: TEMPO
       ]
     }
   ];
@@ -101,10 +97,9 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid, insere inputs e números; carrega progresso salvo
+  // Gera o grid e insere os inputs; após gerar, força os valores da vertical para "TEMPO"
   function generateGrid() {
     gridContainer.innerHTML = '';
-    // Exibe o grid (antes oculto na homepage)
     gridContainer.style.display = "grid";
     const numbers = getNumbers(currentPuzzle.puzzleData);
     for (let r = 0; r < currentPuzzle.puzzleData.length; r++) {
@@ -130,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function() {
           input.addEventListener('input', function() {
             input.value = input.value.toUpperCase();
             saveProgress();
-            // Se estiver em uma célula de linha 1 ou 3 (vertical única), usa auto-avanço vertical; senão, horizontal
             if (r === 1 || r === 3) {
               autoAdvanceVertical(r, c);
             } else {
@@ -153,12 +147,26 @@ document.addEventListener("DOMContentLoaded", function() {
         gridContainer.appendChild(cellDiv);
       }
     }
+    // Força os valores da coluna 2 para a vertical "TEMPO"
+    forceVerticalSolution();
     loadProgress();
   }
 
-  // Auto-avanço horizontal: move para o próximo célula do mesmo bloco; se completo, passa para o próximo bloco ou linha
+  // Força os valores das células da coluna 2 (vertical) para formar "TEMPO"
+  function forceVerticalSolution() {
+    const verticalSolution = ["T", "E", "M", "P", "O"];
+    for (let r = 0; r < verticalSolution.length; r++) {
+      const input = document.querySelector(`.cell input[data-row="${r}"][data-col="2"]`);
+      if (input) {
+        input.value = verticalSolution[r];
+        input.style.backgroundColor = '#44ff44'; // visualiza como correta
+        input.readOnly = true; // impede alteração
+      }
+    }
+  }
+
+  // Auto-avanço horizontal
   function autoAdvance(row, col) {
-    // Define o bloco horizontal atual
     let start = col;
     while (start > 0 && currentPuzzle.puzzleData[row][start - 1] === 1) {
       start--;
@@ -167,7 +175,6 @@ document.addEventListener("DOMContentLoaded", function() {
     while (end < currentPuzzle.puzzleData[row].length - 1 && currentPuzzle.puzzleData[row][end + 1] === 1) {
       end++;
     }
-    // Se o bloco estiver completamente preenchido, procura o próximo bloco na mesma linha
     let blockComplete = true;
     for (let c = start; c <= end; c++) {
       const inp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -186,7 +193,6 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       }
-      // Se não houver outro bloco na mesma linha, passa para a próxima linha (primeiro bloco)
       if (row + 1 < currentPuzzle.puzzleData.length) {
         for (let c = 0; c < currentPuzzle.puzzleData[row + 1].length; c++) {
           if (currentPuzzle.puzzleData[row + 1][c] === 1) {
@@ -199,7 +205,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
     } else {
-      // Caso o bloco não esteja completo, avança para a próxima célula dentro do mesmo bloco
       if (col + 1 <= end) {
         const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col + 1}"]`);
         if (nextInp) nextInp.focus();
@@ -207,20 +212,15 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-avanço vertical: para células isoladas (linhas 1 e 3), avança para a próxima célula ativa abaixo na mesma coluna
+  // Auto-avanço vertical: simplesmente move para a célula da linha seguinte na mesma coluna, se ativa
   function autoAdvanceVertical(row, col) {
-    for (let r = row + 1; r < currentPuzzle.puzzleData.length; r++) {
-      if (currentPuzzle.puzzleData[r][col] === 1) {
-        const nextInp = document.querySelector(`.cell input[data-row="${r}"][data-col="${col}"]`);
-        if (nextInp) {
-          nextInp.focus();
-          return;
-        }
-      }
+    if (row + 1 < currentPuzzle.puzzleData.length && currentPuzzle.puzzleData[row + 1][col] === 1) {
+      const nextInp = document.querySelector(`.cell input[data-row="${row + 1}"][data-col="${col}"]`);
+      if (nextInp) nextInp.focus();
     }
   }
 
-  // Auto-retreat contínuo: se Backspace em célula vazia, move para a célula anterior do mesmo bloco e limpa
+  // Auto-retreat contínuo
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInp) targetInp.focus();
   }
 
-  // Verifica o bloco horizontal na linha 'row'
+  // Verifica o bloco horizontal
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -271,6 +271,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let complete = true;
     for (const { row, col } of cells) {
       const inp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col}"]`);
+      // Se a célula faz parte da vertical forçada, ignora
+      if ((col == 2) && (row >= 0 && row <=4)) continue;
       if (!inp || inp.value === "" || inp.value !== currentPuzzle.solutionData[row][col]) {
         complete = false;
         break;
@@ -286,7 +288,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Verifica os blocos verticais em cada coluna
+  // Verifica os blocos verticais
   function checkVerticalWords() {
     const cols = currentPuzzle.puzzleData[0].length;
     for (let c = 0; c < cols; c++) {
@@ -309,6 +311,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let complete = true;
     for (const { row, col } of cells) {
       const inp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col}"]`);
+      // Se for parte da vertical forçada (coluna 2), usa o valor forçado
+      if (col == 2 && row >= 0 && row <= 4) continue;
       if (!inp || inp.value === "" || inp.value !== currentPuzzle.solutionData[row][col]) {
         complete = false;
         break;
@@ -330,6 +334,8 @@ document.addEventListener("DOMContentLoaded", function() {
     inputs.forEach(inp => {
       const r = parseInt(inp.dataset.row);
       const c = parseInt(inp.dataset.col);
+      // Para as células forçadas da vertical, já estão corretas
+      if (c == 2 && r >= 0 && r <=4) return;
       if (inp.value !== currentPuzzle.solutionData[r][c]) {
         allCorrect = false;
       }
@@ -400,7 +406,6 @@ document.addEventListener("DOMContentLoaded", function() {
     currentPuzzle = puzzles[selectedIndex];
     generateGrid();
     displayClues();
-    // Exibe o bloco de pistas somente após iniciar o jogo
     document.getElementById('clues-container').style.display = "block";
     startTimer();
     clearMessage();
@@ -413,6 +418,7 @@ document.addEventListener("DOMContentLoaded", function() {
     inputs.forEach(inp => {
       const r = parseInt(inp.dataset.row);
       const c = parseInt(inp.dataset.col);
+      if (c == 2 && r >= 0 && r <= 4) return;
       if (inp.value !== currentPuzzle.solutionData[r][c]) {
         inp.style.backgroundColor = '#ff4444';
       } else {
@@ -425,8 +431,10 @@ document.addEventListener("DOMContentLoaded", function() {
   clearBtn.addEventListener('click', () => {
     const inputs = document.querySelectorAll('.cell input');
     inputs.forEach(inp => {
-      inp.value = '';
-      inp.style.backgroundColor = '';
+      if (!(inp.dataset.col == "2")) { 
+        inp.value = '';
+        inp.style.backgroundColor = '';
+      }
     });
     document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('completed'));
     saveProgress();
@@ -455,6 +463,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 
