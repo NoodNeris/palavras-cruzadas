@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Seleção de elementos
+  // Elementos da página
   const gridContainer = document.getElementById('grid-container');
   const horizontalList = document.getElementById('horizontal-list');
   const verticalList = document.getElementById('vertical-list');
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
 
-  // Animação do título
+  // Animação do título com anime.js
   anime({
     targets: '#title',
     translateY: [-50, 0],
@@ -22,20 +22,20 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Array de puzzles – atualmente, apenas um puzzle
-  // Puzzle projetado para ter 5 linhas e 5 colunas:
-  // Linhas 0, 2 e 4 são palavras horizontais; as demais células ativas (coluna 2) compõem a vertical.
+  // Array de puzzles – exemplo com um puzzle 5x5
   const puzzles = [
     {
       id: 0,
       name: "Puzzle Diário",
+      // 1 = célula jogável, 0 = bloqueada
       puzzleData: [
-        [1, 1, 1, 1, 0],  // Linha 0: palavra horizontal de 4 letras (GATO)
-        [0, 0, 1, 0, 0],  // Linha 1: célula ativa isolada (parte vertical)
-        [1, 1, 1, 1, 1],  // Linha 2: palavra horizontal de 5 letras (CAMAS)
-        [0, 0, 1, 0, 0],  // Linha 3: célula ativa isolada (parte vertical)
-        [1, 1, 1, 1, 0]   // Linha 4: palavra horizontal de 4 letras (LIRA)
+        [1, 1, 1, 1, 0],  // Linha 0: palavra horizontal (4 letras)
+        [0, 0, 1, 0, 0],  // Linha 1: célula ativa (parte vertical)
+        [1, 1, 1, 1, 1],  // Linha 2: palavra horizontal (5 letras)
+        [0, 0, 1, 0, 0],  // Linha 3: célula ativa (parte vertical)
+        [1, 1, 1, 1, 0]   // Linha 4: palavra horizontal (4 letras)
       ],
+      // Solução do puzzle (as letras corretas)
       solutionData: [
         ["G", "A", "T", "O", ""],
         ["", "", "A", "", ""],
@@ -43,13 +43,14 @@ document.addEventListener("DOMContentLoaded", function() {
         ["", "", "A", "", ""],
         ["L", "I", "R", "A", ""]
       ],
+      // Dicas – sem as respostas; a numeração (1, 6, 11, etc.) será computada automaticamente
       horizontalClues: [
-        "1. Animal que mia",         // Palavra na linha 0
-        "6. Móveis para dormir",       // Palavra na linha 2
-        "11. Instrumento musical antigo" // Palavra na linha 4
+        "1. Animal que mia",             // para a palavra na linha 0
+        "6. Móveis para dormir",           // para a palavra na linha 2
+        "11. Instrumento musical antigo"   // para a palavra na linha 4
       ],
       verticalClues: [
-        "3. Nome próprio bíblico"     // Vertical: coluna 2 (letras formam TAMAR: T-A-M-A-R)
+        "3. Nome próprio bíblico"         // para a vertical formada na coluna 2
       ]
     }
   ];
@@ -58,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let timerInterval = null;
   let startTime = null;
 
-  // Computa a numeração tradicional (crossword numbering)
+  // Computa a numeração tradicional (como em palavras cruzadas)
   function computeNumbers(puzzleData) {
     const numbers = [];
     let num = 1;
@@ -82,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera a grade com inputs, exibe números e restaura progresso salvo
+  // Gera o grid com inputs, números e restaura progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     const numbers = computeNumbers(currentPuzzle.puzzleData);
@@ -110,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function() {
             input.value = input.value.toUpperCase();
             saveProgress();
             autoAdvance(r, c);
-            checkHorizontalWords(r);
+            checkHorizontalWord(r);
             checkCompletion();
           });
           input.addEventListener('keydown', function(e) {
@@ -124,17 +125,15 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avança para a próxima célula da mesma palavra (horizontal) se disponível
+  // Auto-avança para a próxima célula da mesma palavra (horizontal) se houver
   function autoAdvance(row, col) {
-    // Avança apenas se o próximo na mesma linha for parte do mesmo bloco
     if (col + 1 < currentPuzzle.puzzleData[row].length && currentPuzzle.puzzleData[row][col + 1] === 1) {
-      // Se estiverem contíguos, avança
       const nextInput = document.querySelector(`.cell input[data-row="${row}"][data-col="${col + 1}"]`);
       if (nextInput) nextInput.focus();
     }
   }
 
-  // Navegação com setas (permite mover para células adjacentes)
+  // Navegação com as teclas de seta
   function handleArrowKeys(e, row, col) {
     let targetRow = row, targetCol = col;
     if (e.key === "ArrowRight") targetCol++;
@@ -149,25 +148,24 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInput) targetInput.focus();
   }
 
-  // Verifica palavras horizontais na linha 'row'
-  function checkHorizontalWords(row) {
-    const cells = [];
-    // Percorre a linha para formar blocos contíguos
+  // Verifica se uma palavra horizontal (bloco contíguo na linha) foi completada corretamente
+  function checkHorizontalWord(row) {
+    let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
       if (currentPuzzle.puzzleData[row][c] === 1) {
         cells.push({row, col: c});
       } else {
         if (cells.length > 0) {
-          verifyBlock(cells);
-          cells.length = 0;
+          verifyWord(cells);
+          cells = [];
         }
       }
     }
-    if (cells.length > 0) verifyBlock(cells);
+    if (cells.length > 0) verifyWord(cells);
   }
 
-  // Verifica se o bloco (palavra horizontal) está completo e correto
-  function verifyBlock(cells) {
+  // Verifica um bloco de células (palavra horizontal) e, se completa, marca e exibe mensagem
+  function verifyWord(cells) {
     let complete = true;
     cells.forEach(({row, col}) => {
       const input = document.querySelector(`.cell input[data-row="${row}"][data-col="${col}"]`);
@@ -176,19 +174,16 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
     if (complete) {
-      // Marca visualmente o bloco como concluído
       cells.forEach(({row, col}) => {
         const cellDiv = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
         if (cellDiv) cellDiv.classList.add('completed');
       });
-      // Exibe mensagem de palavra completa
       showMessage("Palavra completa!");
-      // Remove a mensagem após alguns segundos
       setTimeout(clearMessage, 2000);
     }
   }
 
-  // Verifica se todas as células ativas estão corretas para concluir o puzzle
+  // Verifica se todo o puzzle foi completado corretamente
   function checkCompletion() {
     const inputs = document.querySelectorAll('.cell input');
     let allCorrect = true;
@@ -200,12 +195,12 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
     if (allCorrect && inputs.length > 0) {
-      showMessage("Parabéns, você completou o puzzle!");
+      showMessage("Parabéns, puzzle completo!");
       clearInterval(timerInterval);
     }
   }
 
-  // Exibe mensagem no div #message
+  // Exibe mensagem de feedback
   function showMessage(msg) {
     messageDiv.textContent = msg;
   }
@@ -214,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as dicas (clues)
+  // Exibe as dicas (clues) – sem revelar as respostas
   function displayClues() {
     horizontalList.innerHTML = '';
     verticalList.innerHTML = '';
@@ -253,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function() {
     localStorage.setItem(`puzzle-${currentPuzzle.id}-progress`, JSON.stringify(progress));
   }
 
-  // Carrega o progresso salvo, se houver
+  // Carrega o progresso salvo (se houver)
   function loadProgress() {
     const saved = localStorage.getItem(`puzzle-${currentPuzzle.id}-progress`);
     if (saved) {
@@ -270,7 +265,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Função para iniciar o jogo
+  // Inicia o jogo: seleciona o puzzle, gera o grid, exibe as dicas e inicia o timer
   function startGame() {
     const selectedIndex = parseInt(puzzleSelect.value);
     currentPuzzle = puzzles[selectedIndex];
@@ -280,18 +275,17 @@ document.addEventListener("DOMContentLoaded", function() {
     clearMessage();
   }
 
-  // Eventos dos botões e modal
+  // Eventos dos botões e do modal
   startGameBtn.addEventListener('click', startGame);
   checkAnswersBtn.addEventListener('click', () => {
-    // Ao clicar, destaca células incorretas
     const inputs = document.querySelectorAll('.cell input');
     inputs.forEach(input => {
       const r = parseInt(input.dataset.row);
       const c = parseInt(input.dataset.col);
       if (input.value !== currentPuzzle.solutionData[r][c]) {
-        input.style.backgroundColor = '#ffcccc';
+        input.style.backgroundColor = '#ff4444';
       } else {
-        input.style.backgroundColor = '#ccffcc';
+        input.style.backgroundColor = '#44ff44';
       }
     });
     checkCompletion();
@@ -302,7 +296,6 @@ document.addEventListener("DOMContentLoaded", function() {
       input.value = '';
       input.style.backgroundColor = '';
     });
-    // Remove marcações de conclusão
     document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('completed'));
     saveProgress();
     clearMessage();
@@ -327,9 +320,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (event.target === modal) modal.style.display = 'none';
   });
 
-  // (Opcional) Se desejar iniciar o jogo automaticamente ao carregar a página, descomente a linha abaixo:
+  // (Opcional) Você pode iniciar o jogo automaticamente ao carregar a página, descomentando a linha abaixo:
   // startGame();
 });
+
 
 
 

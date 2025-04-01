@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Palavras Cruzadas</title>
-  <!-- Fonte do Google -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Fonte Gamer: Press Start 2P -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <!-- CSS principal -->
   <link rel="stylesheet" href="css/style.css">
   <!-- Biblioteca de animação -->
@@ -17,7 +17,7 @@
       <h1 id="title">Palavras Cruzadas</h1>
       <div class="header-controls">
         <select id="puzzleSelect">
-          <!-- Atualmente, há apenas um puzzle; futuramente, adicione mais -->
+          <!-- Por enquanto, apenas um puzzle diário -->
           <option value="0">Puzzle Diário</option>
         </select>
         <span id="timer">00:00</span>
@@ -34,9 +34,9 @@
   <main>
     <div class="game-container">
       <section id="grid-container">
-        <!-- A grade do puzzle será gerada via JavaScript -->
+        <!-- A grade será gerada via JavaScript -->
       </section>
-      <!-- Div para exibir mensagens (ex.: palavra completa, puzzle finalizado) -->
+      <!-- Div para exibir mensagens de feedback -->
       <div id="message"></div>
       <aside id="clues-container">
         <div class="clues-section">
@@ -57,10 +57,10 @@
       <span id="closeModal" class="close">&times;</span>
       <h2>Como Jogar</h2>
       <p>
-        Preencha as letras nas células para formar as palavras de acordo com as dicas.<br>
+        Preencha as letras nas células para formar as palavras com base nas dicas.<br>
+        As letras são inseridas da esquerda para a direita dentro de cada palavra.<br>
         Use as setas do teclado ou clique nas células para navegar.<br>
-        As letras são preenchidas da esquerda para a direita dentro da mesma palavra.<br>
-        O progresso é salvo automaticamente!
+        Seu progresso é salvo automaticamente!
       </p>
     </div>
   </div>
@@ -71,6 +71,7 @@
   <script src="js/script.js"></script>
 </body>
 </html>
+
 
 
 
