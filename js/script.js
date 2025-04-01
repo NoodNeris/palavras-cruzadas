@@ -48,17 +48,16 @@ document.addEventListener("DOMContentLoaded", function() {
         [0,0,0,1,1,1,0,0,0,0],
         [0,1,1,1,1,1,1,1,0,0]
       ],
-      // Matriz de números definida manualmente:
-      // Row 0: número 1 na coluna 2; Row 1: número 2 na coluna 3; Row 2: número 3 na coluna 1.
+      // Matriz de números definida manualmente: 1 na Row 0 col2, 2 na Row 1 col3, 3 na Row 2 col1.
       clueNumbers: [
         [0,0,1,0,0,0,0,0,0,0],
         [0,0,0,2,0,0,0,0,0,0],
         [0,3,0,0,0,0,0,0,0,0]
       ],
       // Solução:
-      // Row 0: BANANA (B A N A N A)
-      // Row 1: UVA (U V A)
-      // Row 2: MELANCIA (M E L A N C I A) – agora com a letra final "A"
+      // Row 0: BANANA -> B, A, N, A, N, A
+      // Row 1: UVA -> U, V, A
+      // Row 2: MELANCIA -> M, E, L, A, N, C, I, A (com a letra final "A")
       solutionData: [
         ["", "", "B", "A", "N", "A", "N", "A", "", ""],
         ["", "", "", "U", "V", "A", "", "", "", ""],
@@ -100,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid e insere os inputs e números
+  // Gera o grid e insere inputs e números; carrega o progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -148,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avanço horizontal: tenta avançar dentro do mesmo bloco; se completo, pula para o próximo bloco ou linha
+  // Auto-avanço horizontal
   function autoAdvance(row, col) {
     let startCol = col;
     while (startCol > 0 && currentPuzzle.puzzleData[row][startCol - 1] === 1) {
@@ -167,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
     if (blockComplete) {
-      // Procura o próximo bloco na mesma linha
+      // Próximo bloco na mesma linha
       for (let c = endCol + 1; c < currentPuzzle.puzzleData[row].length; c++) {
         if (currentPuzzle.puzzleData[row][c] === 1) {
           const nextInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${c}"]`);
@@ -197,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Auto-retreat contínuo: se Backspace em célula vazia, retorna para a célula anterior do mesmo bloco e limpa
+  // Auto-retreat contínuo
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -287,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as pistas com os números definidos manualmente (em ordem 1, 2, 3)
+  // Exibe as pistas com os números definidos (1, 2, 3)
   function displayClues() {
     horizontalList.innerHTML = `
       <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
@@ -442,6 +441,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 
