@@ -15,6 +15,13 @@
   <header>
     <div class="container-header">
       <h1 id="title">Palavras Cruzadas</h1>
+      <div class="header-controls">
+        <select id="puzzleSelect">
+          <!-- Atualmente, há apenas um puzzle; futuramente, adicione mais opções -->
+          <option value="0">Puzzle Diário</option>
+        </select>
+        <span id="timer">00:00</span>
+      </div>
       <nav>
         <button id="startGameBtn">Iniciar Jogo</button>
         <button id="checkAnswersBtn">Verificar Respostas</button>
@@ -27,7 +34,7 @@
   <main>
     <div class="game-container">
       <section id="grid-container">
-        <!-- A grade do jogo será gerada via JavaScript -->
+        <!-- A grade será gerada via JavaScript -->
       </section>
       <aside id="clues-container">
         <div class="clues-section">
@@ -50,7 +57,8 @@
       <p>
         Preencha as letras nas células para formar as palavras de acordo com as dicas.<br>
         Use as setas do teclado ou clique nas células para navegar.<br>
-        Clique em "Verificar Respostas" para conferir seu desempenho.
+        Clique em "Verificar Respostas" para conferir seu desempenho.<br>
+        O progresso é salvo automaticamente!
       </p>
     </div>
   </div>
@@ -61,7 +69,7 @@
   <script src="js/script.js"></script>
 </body>
 </html>
->
+
 
 
 

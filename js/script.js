@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const checkAnswersBtn = document.getElementById('checkAnswersBtn');
   const clearBtn = document.getElementById('clearBtn');
   const instructionsBtn = document.getElementById('instructionsBtn');
+  const puzzleSelect = document.getElementById('puzzleSelect');
+  const timerDisplay = document.getElementById('timer');
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
 
@@ -19,35 +21,50 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Puzzle pré-definido: padrão 5x5
-  // 1 = célula jogável, 0 = bloqueada
-  const puzzleData = [
-    [1, 1, 1, 1, 0],
-    [0, 0, 1, 0, 0],
-    [1, 1, 1, 1, 1],
-    [0, 0, 1, 0, 0],
-    [1, 1, 1, 1, 0]
+  // Array de puzzles – você pode adicionar mais puzzles aqui
+  const puzzles = [
+    {
+      id: 0,
+      name: "Puzzle Diário",
+      puzzleData: [
+        [1, 1, 1, 0, 1],
+        [0, 0, 1, 0, 0],
+        [1, 1, 1, 1, 1],
+        [0, 0, 1, 0, 0],
+        [1, 1, 1, 1, 0]
+      ],
+      solutionData: [
+        ["G", "A", "T", "O", ""],       // 1-across: GATO
+        ["", "", "A", "", ""],
+        ["C", "A", "M", "A", "S"],       // 6-across: CAMAS
+        ["", "", "A", "", ""],
+        ["L", "I", "R", "A", ""]         // 11-across: LIRA
+      ],
+      // Clues com numeração baseada na numeração que será computada
+      horizontalClues: [
+        "1. GATO – Animal que mia",
+        "6. CAMAS – Móveis para dormir",
+        "11. LIRA – Instrumento musical antigo"
+      ],
+      verticalClues: [
+        "3. TAMAR – Nome próprio bíblico" // Exemplo: letras formando TAMAR
+      ]
+    }
+    // Futuramente, adicione mais puzzles aqui
   ];
 
-  // Solução do puzzle – cada letra na célula jogável
-  // Linhas com células bloqueadas terão strings vazias ("") nas posições bloqueadas.
-  const solutionData = [
-    ["G", "A", "T", "O", ""],       // Palavra horizontal 1: GATO
-    ["", "", "A", "", ""],           // Letra isolada (parte da vertical)
-    ["C", "A", "M", "A", "S"],       // Palavra horizontal 2: CAMAS
-    ["", "", "A", "", ""],           // Letra isolada (vertical)
-    ["L", "I", "R", "A", ""]         // Palavra horizontal 3: LIRA
-  ];
+  let currentPuzzle = null;
+  let timerInterval = null;
+  let startTime = null;
 
-  // Função para calcular os números (crossword numbering)
-  function computeNumbers() {
+  // Computa a numeração das células (como em palavras cruzadas tradicionais)
+  function computeNumbers(puzzleData) {
     const numbers = [];
     let num = 1;
     for (let r = 0; r < puzzleData.length; r++) {
       numbers[r] = [];
       for (let c = 0; c < puzzleData[r].length; c++) {
         if (puzzleData[r][c] === 1) {
-          // Se estiver na borda ou à esquerda/acima for bloqueada, marca número
           const leftBlocked = (c === 0) || (puzzleData[r][c - 1] === 0);
           const topBlocked = (r === 0) || (puzzleData[r - 1][c] === 0);
           if (leftBlocked || topBlocked) {
@@ -64,39 +81,25 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  const numberData = computeNumbers();
-
-  // Clues definidas manualmente com base na numeração:
-  // Horizontal: 1-across (GATO), 6-across (CAMAS), 11-across (LIRA)
-  const horizontalClues = [
-    "1. GATO – Animal que mia",
-    "6. CAMAS – Móveis para dormir",
-    "11. LIRA – Instrumento musical antigo"
-  ];
-
-  // Vertical: a única palavra vertical é a coluna 2: T, A, M, A, R = TAMAR
-  const verticalClues = [
-    "3. TAMAR – Nome próprio bíblico"
-  ];
-
-  // Gera a grade com inputs e números
+  // Gera a grade do puzzle com inputs e exibe os números
   function generateGrid() {
     gridContainer.innerHTML = '';
-    for (let r = 0; r < puzzleData.length; r++) {
-      for (let c = 0; c < puzzleData[r].length; c++) {
+    const numbers = computeNumbers(currentPuzzle.puzzleData);
+    for (let r = 0; r < currentPuzzle.puzzleData.length; r++) {
+      for (let c = 0; c < currentPuzzle.puzzleData[r].length; c++) {
         const cellDiv = document.createElement('div');
         cellDiv.classList.add('cell');
         cellDiv.dataset.row = r;
         cellDiv.dataset.col = c;
-        if (puzzleData[r][c] === 0) {
+        if (currentPuzzle.puzzleData[r][c] === 0) {
           cellDiv.classList.add('blocked');
           cellDiv.textContent = '';
         } else {
-          // Se houver número para a célula, exibe-o
-          if (numberData[r][c] !== "") {
+          // Exibe o número, se existir
+          if (numbers[r][c] !== "") {
             const numSpan = document.createElement('span');
             numSpan.classList.add('cell-number');
-            numSpan.textContent = numberData[r][c];
+            numSpan.textContent = numbers[r][c];
             cellDiv.appendChild(numSpan);
           }
           // Cria o input para a letra
@@ -104,10 +107,13 @@ document.addEventListener("DOMContentLoaded", function() {
           input.setAttribute('maxlength', '1');
           input.dataset.row = r;
           input.dataset.col = c;
+          // Ao digitar, transforma a letra em maiúscula, salva o progresso e move para a próxima célula
           input.addEventListener('input', function() {
             input.value = input.value.toUpperCase();
+            saveProgress();
             moveToNextCell(r, c);
           });
+          // Navegação com setas
           input.addEventListener('keydown', function(e) {
             handleArrowKeys(e, r, c);
           });
@@ -116,16 +122,33 @@ document.addEventListener("DOMContentLoaded", function() {
         gridContainer.appendChild(cellDiv);
       }
     }
+    loadProgress(); // Tenta carregar o progresso salvo (se houver)
   }
 
-  // Move o foco para a próxima célula jogável (varre linha a linha)
+  // Exibe as dicas (clues) nas áreas laterais
+  function displayClues() {
+    horizontalList.innerHTML = '';
+    verticalList.innerHTML = '';
+    currentPuzzle.horizontalClues.forEach(clue => {
+      const li = document.createElement('li');
+      li.textContent = clue;
+      horizontalList.appendChild(li);
+    });
+    currentPuzzle.verticalClues.forEach(clue => {
+      const li = document.createElement('li');
+      li.textContent = clue;
+      verticalList.appendChild(li);
+    });
+  }
+
+  // Move o foco para a próxima célula jogável (varrendo linha a linha)
   function moveToNextCell(row, col) {
     let nextCol = col + 1;
     let nextRow = row;
-    if (nextCol >= puzzleData[0].length) {
+    if (nextCol >= currentPuzzle.puzzleData[0].length) {
       nextCol = 0;
       nextRow = row + 1;
-      if (nextRow >= puzzleData.length) return;
+      if (nextRow >= currentPuzzle.puzzleData.length) return;
     }
     const nextInput = document.querySelector(`.cell input[data-row="${nextRow}"][data-col="${nextCol}"]`);
     if (nextInput) {
@@ -135,43 +158,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Navegação com as teclas de seta
+  // Navegação com setas
   function handleArrowKeys(e, row, col) {
     let targetRow = row;
     let targetCol = col;
-    if (e.key === "ArrowRight") {
-      targetCol++;
-    } else if (e.key === "ArrowLeft") {
-      targetCol--;
-    } else if (e.key === "ArrowUp") {
-      targetRow--;
-    } else if (e.key === "ArrowDown") {
-      targetRow++;
-    } else {
-      return;
-    }
+    if (e.key === "ArrowRight") targetCol++;
+    else if (e.key === "ArrowLeft") targetCol--;
+    else if (e.key === "ArrowUp") targetRow--;
+    else if (e.key === "ArrowDown") targetRow++;
+    else return;
     e.preventDefault();
-    if (targetRow < 0 || targetRow >= puzzleData.length || targetCol < 0 || targetCol >= puzzleData[0].length) return;
+    if (targetRow < 0 || targetRow >= currentPuzzle.puzzleData.length || targetCol < 0 || targetCol >= currentPuzzle.puzzleData[0].length) return;
     const targetInput = document.querySelector(`.cell input[data-row="${targetRow}"][data-col="${targetCol}"]`);
-    if (targetInput) {
-      targetInput.focus();
-    }
-  }
-
-  // Exibe as dicas nas áreas laterais
-  function displayClues() {
-    horizontalList.innerHTML = '';
-    verticalList.innerHTML = '';
-    horizontalClues.forEach(clue => {
-      const li = document.createElement('li');
-      li.textContent = clue;
-      horizontalList.appendChild(li);
-    });
-    verticalClues.forEach(clue => {
-      const li = document.createElement('li');
-      li.textContent = clue;
-      verticalList.appendChild(li);
-    });
+    if (targetInput) targetInput.focus();
   }
 
   // Verifica as respostas comparando com a solução
@@ -180,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function() {
     inputs.forEach(input => {
       const r = parseInt(input.dataset.row);
       const c = parseInt(input.dataset.col);
-      if (solutionData[r] && solutionData[r][c] && input.value !== solutionData[r][c]) {
+      if (currentPuzzle.solutionData[r] && currentPuzzle.solutionData[r][c] && input.value !== currentPuzzle.solutionData[r][c]) {
         input.style.backgroundColor = '#ffcccc';
       } else {
         input.style.backgroundColor = '#ccffcc';
@@ -188,27 +187,64 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Limpa os inputs e restaura o fundo padrão
+  // Limpa todos os inputs e remove cores de fundo
   function clearGrid() {
     const inputs = document.querySelectorAll('.cell input');
     inputs.forEach(input => {
       input.value = '';
       input.style.backgroundColor = '';
     });
+    saveProgress();
   }
 
-  // Eventos de botões e modal
-  startGameBtn.addEventListener('click', function() {
+  // Timer: inicia e atualiza a exibição
+  function startTimer() {
+    startTime = new Date();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(function() {
+      const elapsed = Math.floor((new Date() - startTime) / 1000);
+      const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const seconds = String(elapsed % 60).padStart(2, '0');
+      timerDisplay.textContent = `${minutes}:${seconds}`;
+    }, 1000);
+  }
+
+  // Salva o progresso atual no localStorage (chave baseada no id do puzzle)
+  function saveProgress() {
+    const inputs = document.querySelectorAll('.cell input');
+    const progress = {};
+    inputs.forEach(input => {
+      const key = `r${input.dataset.row}c${input.dataset.col}`;
+      progress[key] = input.value;
+    });
+    localStorage.setItem(`puzzle-${currentPuzzle.id}-progress`, JSON.stringify(progress));
+  }
+
+  // Carrega o progresso salvo (se houver)
+  function loadProgress() {
+    const saved = localStorage.getItem(`puzzle-${currentPuzzle.id}-progress`);
+    if (saved) {
+      const progress = JSON.parse(saved);
+      for (let key in progress) {
+        const input = document.querySelector(`.cell input[data-row="${key.match(/r(\d+)/)[1]}"][data-col="${key.match(/c(\d+)/)[1]}"]`);
+        if (input) {
+          input.value = progress[key];
+        }
+      }
+    }
+  }
+
+  // Inicia o jogo: seleciona o puzzle, gera a grade, exibe as dicas e inicia o timer
+  function startGame() {
+    const selectedIndex = parseInt(puzzleSelect.value);
+    currentPuzzle = puzzles[selectedIndex];
     generateGrid();
     displayClues();
-    anime({
-      targets: '#grid-container',
-      opacity: [0, 1],
-      duration: 1000,
-      easing: 'easeOutExpo'
-    });
-  });
+    startTimer();
+  }
 
+  // Eventos dos botões e modal
+  startGameBtn.addEventListener('click', startGame);
   checkAnswersBtn.addEventListener('click', checkAnswers);
   clearBtn.addEventListener('click', clearGrid);
 
@@ -228,11 +264,13 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
+    if (event.target === modal) modal.style.display = 'none';
   });
+
+  // Se houver progresso salvo ao carregar a página, o jogo pode ser retomado (opcional)
+  // startGame(); // Você pode chamar isso automaticamente ou deixar que o usuário clique "Iniciar Jogo"
 });
+
 
 
 

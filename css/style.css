@@ -23,14 +23,29 @@ header {
 .container-header {
   max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 header h1 {
   font-size: 2.5em;
   margin-bottom: 10px;
+}
+
+.header-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#puzzleSelect {
+  padding: 5px;
+  font-size: 1em;
+}
+
+#timer {
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 nav {
@@ -73,7 +88,7 @@ nav button:hover {
   position: relative;
 }
 
-/* Células do puzzle – cada célula é posicionada de forma relativa */
+/* Células do puzzle */
 .cell {
   width: 50px;
   height: 50px;
@@ -83,7 +98,6 @@ nav button:hover {
   transition: background 0.3s ease;
 }
 
-/* Input dentro da célula */
 .cell input {
   width: 100%;
   height: 100%;
@@ -99,7 +113,7 @@ nav button:hover {
   background: #ffeb3b;
 }
 
-/* Número da célula (dica) */
+/* Número da célula */
 .cell-number {
   position: absolute;
   top: 1px;
@@ -114,7 +128,7 @@ nav button:hover {
   cursor: default;
 }
 
-/* Dicas (Clues) */
+/* Dicas */
 #clues-container {
   max-width: 350px;
   width: 100%;
@@ -190,7 +204,7 @@ footer {
   width: 100%;
 }
 
-/* Media Queries para Responsividade */
+/* Responsividade */
 @media (max-width: 768px) {
   .game-container {
     flex-direction: column;
@@ -234,6 +248,7 @@ footer {
     font-size: 1em;
   }
 }
+
 
 
 
