@@ -115,7 +115,6 @@ nav button:hover {
   background: transparent;
   text-transform: uppercase;
   color: #fff;
-  font-family: 'Press Start 2P', cursive;
 }
 
 .cell input:focus {
@@ -208,7 +207,6 @@ nav button:hover {
   position: relative;
   text-align: center;
   color: #eee;
-  font-family: 'Press Start 2P', cursive;
 }
 
 .close {
@@ -281,6 +279,7 @@ footer {
     font-size: 0.8em;
   }
 }
+
 
 
 

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Elementos da página
+  // Seleção de elementos
   const gridContainer = document.getElementById('grid-container');
   const horizontalList = document.getElementById('horizontal-list');
   const verticalList = document.getElementById('vertical-list');
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
 
-  // Animação do título com anime.js
+  // Animação do título
   anime({
     targets: '#title',
     translateY: [-50, 0],
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
         [0, 0, 1, 0, 0],  // Linha 3: célula ativa (parte vertical)
         [1, 1, 1, 1, 0]   // Linha 4: palavra horizontal (4 letras)
       ],
-      // Solução do puzzle (as letras corretas)
+      // Solução do puzzle
       solutionData: [
         ["G", "A", "T", "O", ""],
         ["", "", "A", "", ""],
@@ -43,14 +43,14 @@ document.addEventListener("DOMContentLoaded", function() {
         ["", "", "A", "", ""],
         ["L", "I", "R", "A", ""]
       ],
-      // Dicas – sem as respostas; a numeração (1, 6, 11, etc.) será computada automaticamente
+      // Dicas sem revelar as respostas
       horizontalClues: [
-        "1. Animal que mia",             // para a palavra na linha 0
-        "6. Móveis para dormir",           // para a palavra na linha 2
-        "11. Instrumento musical antigo"   // para a palavra na linha 4
+        "1. Animal que mia",             
+        "6. Móveis para dormir",           
+        "11. Instrumento musical antigo"   
       ],
       verticalClues: [
-        "3. Nome próprio bíblico"         // para a vertical formada na coluna 2
+        "3. Nome próprio bíblico"         
       ]
     }
   ];
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let timerInterval = null;
   let startTime = null;
 
-  // Computa a numeração tradicional (como em palavras cruzadas)
+  // Computa a numeração tradicional
   function computeNumbers(puzzleData) {
     const numbers = [];
     let num = 1;
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return numbers;
   }
 
-  // Gera o grid com inputs, números e restaura progresso salvo
+  // Gera o grid, insere inputs e exibe os números; carrega progresso salvo
   function generateGrid() {
     gridContainer.innerHTML = '';
     const numbers = computeNumbers(currentPuzzle.puzzleData);
@@ -112,10 +112,16 @@ document.addEventListener("DOMContentLoaded", function() {
             saveProgress();
             autoAdvance(r, c);
             checkHorizontalWord(r);
+            checkVerticalWords();
             checkCompletion();
           });
           input.addEventListener('keydown', function(e) {
-            handleArrowKeys(e, r, c);
+            if (e.key === "Backspace" && input.value === "") {
+              autoRetreat(r, c);
+              e.preventDefault();
+            } else {
+              handleArrowKeys(e, r, c);
+            }
           });
           cellDiv.appendChild(input);
         }
@@ -125,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
     loadProgress();
   }
 
-  // Auto-avança para a próxima célula da mesma palavra (horizontal) se houver
+  // Auto-avança para a próxima célula da mesma palavra (horizontal)
   function autoAdvance(row, col) {
     if (col + 1 < currentPuzzle.puzzleData[row].length && currentPuzzle.puzzleData[row][col + 1] === 1) {
       const nextInput = document.querySelector(`.cell input[data-row="${row}"][data-col="${col + 1}"]`);
@@ -133,7 +139,17 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Navegação com as teclas de seta
+  // Auto-retreat: se pressionar Backspace em célula vazia, volta para a célula anterior da mesma palavra
+  function autoRetreat(row, col) {
+    if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
+      const prevInput = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
+      if (prevInput) {
+        prevInput.focus();
+        prevInput.value = '';
+      }
+    }
+  }
+
   function handleArrowKeys(e, row, col) {
     let targetRow = row, targetCol = col;
     if (e.key === "ArrowRight") targetCol++;
@@ -148,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (targetInput) targetInput.focus();
   }
 
-  // Verifica se uma palavra horizontal (bloco contíguo na linha) foi completada corretamente
+  // Verifica palavras horizontais na linha
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -156,34 +172,71 @@ document.addEventListener("DOMContentLoaded", function() {
         cells.push({row, col: c});
       } else {
         if (cells.length > 0) {
-          verifyWord(cells);
+          verifyHorizontalBlock(cells);
           cells = [];
         }
       }
     }
-    if (cells.length > 0) verifyWord(cells);
+    if (cells.length > 0) verifyHorizontalBlock(cells);
   }
 
-  // Verifica um bloco de células (palavra horizontal) e, se completa, marca e exibe mensagem
-  function verifyWord(cells) {
+  function verifyHorizontalBlock(cells) {
     let complete = true;
-    cells.forEach(({row, col}) => {
+    for (const {row, col} of cells) {
       const input = document.querySelector(`.cell input[data-row="${row}"][data-col="${col}"]`);
       if (!input || input.value === "" || input.value !== currentPuzzle.solutionData[row][col]) {
         complete = false;
+        break;
       }
-    });
-    if (complete) {
+    }
+    if (complete && cells.length > 1) {
       cells.forEach(({row, col}) => {
         const cellDiv = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
         if (cellDiv) cellDiv.classList.add('completed');
       });
-      showMessage("Palavra completa!");
+      showMessage("Palavra horizontal completa!");
       setTimeout(clearMessage, 2000);
     }
   }
 
-  // Verifica se todo o puzzle foi completado corretamente
+  // Verifica palavras verticais para cada coluna
+  function checkVerticalWords() {
+    const cols = currentPuzzle.puzzleData[0].length;
+    for (let c = 0; c < cols; c++) {
+      let cells = [];
+      for (let r = 0; r < currentPuzzle.puzzleData.length; r++) {
+        if (currentPuzzle.puzzleData[r][c] === 1) {
+          cells.push({row: r, col: c});
+        } else {
+          if (cells.length > 0) {
+            verifyVerticalBlock(cells);
+            cells = [];
+          }
+        }
+      }
+      if (cells.length > 0) verifyVerticalBlock(cells);
+    }
+  }
+
+  function verifyVerticalBlock(cells) {
+    let complete = true;
+    for (const {row, col} of cells) {
+      const input = document.querySelector(`.cell input[data-row="${row}"][data-col="${col}"]`);
+      if (!input || input.value === "" || input.value !== currentPuzzle.solutionData[row][col]) {
+        complete = false;
+        break;
+      }
+    }
+    if (complete && cells.length > 1) {
+      cells.forEach(({row, col}) => {
+        const cellDiv = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+        if (cellDiv) cellDiv.classList.add('completed');
+      });
+      showMessage("Palavra vertical completa!");
+      setTimeout(clearMessage, 2000);
+    }
+  }
+
   function checkCompletion() {
     const inputs = document.querySelectorAll('.cell input');
     let allCorrect = true;
@@ -200,7 +253,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Exibe mensagem de feedback
   function showMessage(msg) {
     messageDiv.textContent = msg;
   }
@@ -209,7 +261,6 @@ document.addEventListener("DOMContentLoaded", function() {
     messageDiv.textContent = "";
   }
 
-  // Exibe as dicas (clues) – sem revelar as respostas
   function displayClues() {
     horizontalList.innerHTML = '';
     verticalList.innerHTML = '';
@@ -225,7 +276,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Timer: inicia e atualiza a exibição
   function startTimer() {
     startTime = new Date();
     if (timerInterval) clearInterval(timerInterval);
@@ -237,7 +287,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }, 1000);
   }
 
-  // Salva o progresso atual no localStorage
   function saveProgress() {
     const inputs = document.querySelectorAll('.cell input');
     const progress = {};
@@ -248,7 +297,6 @@ document.addEventListener("DOMContentLoaded", function() {
     localStorage.setItem(`puzzle-${currentPuzzle.id}-progress`, JSON.stringify(progress));
   }
 
-  // Carrega o progresso salvo (se houver)
   function loadProgress() {
     const saved = localStorage.getItem(`puzzle-${currentPuzzle.id}-progress`);
     if (saved) {
@@ -265,7 +313,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Inicia o jogo: seleciona o puzzle, gera o grid, exibe as dicas e inicia o timer
   function startGame() {
     const selectedIndex = parseInt(puzzleSelect.value);
     currentPuzzle = puzzles[selectedIndex];
@@ -275,7 +322,6 @@ document.addEventListener("DOMContentLoaded", function() {
     clearMessage();
   }
 
-  // Eventos dos botões e do modal
   startGameBtn.addEventListener('click', startGame);
   checkAnswersBtn.addEventListener('click', () => {
     const inputs = document.querySelectorAll('.cell input');
@@ -320,9 +366,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (event.target === modal) modal.style.display = 'none';
   });
 
-  // (Opcional) Você pode iniciar o jogo automaticamente ao carregar a página, descomentando a linha abaixo:
+  // (Opcional) Iniciar automaticamente:
   // startGame();
 });
+
 
 
 
