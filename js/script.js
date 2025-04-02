@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const instructionsBtn = document.getElementById('instructionsBtn');
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
-  
+
   let currentPuzzle = null;
   let timerInterval = null;
   let startTime = null;
@@ -31,38 +31,50 @@ document.addEventListener("DOMContentLoaded", function() {
     easing: 'easeOutExpo'
   });
 
-  // Puzzle com tema "Frutas"
+  // Puzzle de teste – Tema "Frutas"
+  // Grid de 4 linhas x 10 colunas:
   // Row 0: BANANA ativa de col 2 a 7
   // Row 1: UVA ativa de col 3 a 5
-  // Row 2: MELANCIA ativa de col 1 a 8 (com letra final "A")
+  // Row 2: ACEROLA ativa de col 2 a 8 (7 letras)
+  // Row 3: PITANGA ativa de col 2 a 8 (7 letras)
   const puzzles = [
     {
       id: 0,
       name: "Puzzle Diário - Frutas",
       puzzleData: [
+        // Row 0: BANANA
         [0,0,1,1,1,1,1,1,0,0],
+        // Row 1: UVA
         [0,0,0,1,1,1,0,0,0,0],
-        [0,1,1,1,1,1,1,1,0,0]
+        // Row 2: ACEROLA
+        [0,0,1,1,1,1,1,1,1,0],
+        // Row 3: PITANGA
+        [0,0,1,1,1,1,1,1,1,0]
       ],
-      // Números definidos manualmente: 1 na Row 0 col2, 2 na Row 1 col3, 3 na Row 2 col1.
+      // Matriz de números manual:
+      // Row 0: número 1 na coluna 2; Row 1: número 2 na coluna 3; Row 2: número 3 na coluna 2; Row 3: número 4 na coluna 2.
       clueNumbers: [
         [0,0,1,0,0,0,0,0,0,0],
         [0,0,0,2,0,0,0,0,0,0],
-        [0,3,0,0,0,0,0,0,0,0]
+        [0,0,3,0,0,0,0,0,0,0],
+        [0,0,4,0,0,0,0,0,0,0]
       ],
       // Solução:
-      // Row 0: BANANA -> B, A, N, A, N, A
-      // Row 1: UVA -> U, V, A
-      // Row 2: MELANCIA -> M, E, L, A, N, C, I, A
+      // Row 0: BANANA (B, A, N, A, N, A)
+      // Row 1: UVA (U, V, A)
+      // Row 2: ACEROLA (A, C, E, R, O, L, A)
+      // Row 3: PITANGA (P, I, T, A, N, G, A)
       solutionData: [
         ["", "", "B", "A", "N", "A", "N", "A", "", ""],
         ["", "", "", "U", "V", "A", "", "", "", ""],
-        ["", "M", "E", "L", "A", "N", "C", "I", "A", ""]
+        ["", "", "A", "C", "E", "R", "O", "L", "A", ""],
+        ["", "", "P", "I", "T", "A", "N", "G", "A", ""]
       ],
       horizontalClues: [
         "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (1)
         "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (2)
-        "Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas." // MELANCIA (3)
+        "Fruta vermelha, comumente usada em sucos e vitaminas, com polpa adocicada.", // ACEROLA (3)
+        "Fruta doce e pequena que cresce em cachos, lembrando pequenas maçãs." // PITANGA (4)
       ]
     }
   ];
@@ -280,7 +292,8 @@ document.addEventListener("DOMContentLoaded", function() {
     horizontalList.innerHTML = `
       <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
       <li>2: Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.</li>
-      <li>3: Fruta grande, verde por fora, vermelha por dentro e cheia de sementes pretinhas.</li>
+      <li>3: Fruta vermelha, comumente usada em sucos e vitaminas, com polpa adocicada.</li>
+      <li>4: Fruta doce e pequena que cresce em cachos, lembrando pequenas maçãs.</li>
     `;
   }
 
@@ -429,6 +442,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
 
 
 

@@ -97,7 +97,7 @@ nav button:hover {
   margin: 0 auto;
 }
 
-/* Grid: 3 linhas x 10 colunas */
+/* Grid: 4 linhas x 10 colunas */
 #grid-container {
   display: grid;
   grid-template-columns: repeat(10, 50px);
@@ -165,7 +165,7 @@ nav button:hover {
   color: #00FF00;
 }
 
-/* Dicas (Clues) */
+/* Dicas (Clues) – exibe numeração e pista */
 #clues-container {
   max-width: 350px;
   width: 100%;
@@ -301,6 +301,7 @@ footer {
     font-size: 0.6em;
   }
 }
+
 
 
 
