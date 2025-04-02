@@ -11,18 +11,18 @@ document.addEventListener("DOMContentLoaded", function() {
   const instructionsBtn = document.getElementById('instructionsBtn');
   const modal = document.getElementById('modal');
   const closeModal = document.getElementById('closeModal');
-
+  
   let currentPuzzle = null;
   let timerInterval = null;
   let startTime = null;
   let currentInput = null;
-
+  
   document.addEventListener("focusin", function(e) {
     if (e.target.tagName === "INPUT") {
       currentInput = e.target;
     }
   });
-
+  
   anime({
     targets: '#title',
     translateY: [-50, 0],
@@ -30,29 +30,24 @@ document.addEventListener("DOMContentLoaded", function() {
     duration: 1000,
     easing: 'easeOutExpo'
   });
-
+  
   // Puzzle de teste – Tema "Frutas"
   // Grid de 4 linhas x 10 colunas:
-  // Row 0: BANANA ativa de col 2 a 7
-  // Row 1: UVA ativa de col 3 a 5
-  // Row 2: ACEROLA ativa de col 2 a 8 (7 letras)
-  // Row 3: PITANGA ativa de col 2 a 8 (7 letras)
+  // Row 0: BANANA ativa de col 2 a 7.
+  // Row 1: UVA ativa de col 3 a 5.
+  // Row 2: ACEROLA ativa de col 2 a 8.
+  // Row 3: PITANGA ativa de col 2 a 8.
   const puzzles = [
     {
       id: 0,
       name: "Puzzle Diário - Frutas",
       puzzleData: [
-        // Row 0: BANANA
         [0,0,1,1,1,1,1,1,0,0],
-        // Row 1: UVA
         [0,0,0,1,1,1,0,0,0,0],
-        // Row 2: ACEROLA
         [0,0,1,1,1,1,1,1,1,0],
-        // Row 3: PITANGA
         [0,0,1,1,1,1,1,1,1,0]
       ],
-      // Matriz de números manual:
-      // Row 0: número 1 na coluna 2; Row 1: número 2 na coluna 3; Row 2: número 3 na coluna 2; Row 3: número 4 na coluna 2.
+      // Números definidos manualmente: 1 na Row 0 col2; 2 na Row 1 col3; 3 na Row 2 col2; 4 na Row 3 col2.
       clueNumbers: [
         [0,0,1,0,0,0,0,0,0,0],
         [0,0,0,2,0,0,0,0,0,0],
@@ -60,10 +55,10 @@ document.addEventListener("DOMContentLoaded", function() {
         [0,0,4,0,0,0,0,0,0,0]
       ],
       // Solução:
-      // Row 0: BANANA (B, A, N, A, N, A)
-      // Row 1: UVA (U, V, A)
-      // Row 2: ACEROLA (A, C, E, R, O, L, A)
-      // Row 3: PITANGA (P, I, T, A, N, G, A)
+      // Row 0: BANANA -> B, A, N, A, N, A
+      // Row 1: UVA -> U, V, A
+      // Row 2: ACEROLA -> A, C, E, R, O, L, A
+      // Row 3: PITANGA -> P, I, T, A, N, G, A
       solutionData: [
         ["", "", "B", "A", "N", "A", "N", "A", "", ""],
         ["", "", "", "U", "V", "A", "", "", "", ""],
@@ -71,19 +66,19 @@ document.addEventListener("DOMContentLoaded", function() {
         ["", "", "P", "I", "T", "A", "N", "G", "A", ""]
       ],
       horizontalClues: [
-        "Fruta amarela, rica em potássio e favorita dos macacos.",  // BANANA (1)
-        "Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.", // UVA (2)
-        "Fruta vermelha, comumente usada em sucos e vitaminas, com polpa adocicada.", // ACEROLA (3)
-        "Fruta doce e pequena que cresce em cachos, lembrando pequenas maçãs." // PITANGA (4)
+        "1: Fruta amarela, rica em potássio e favorita dos macacos.",
+        "2: Pequena, usada para fazer vinhos e sucos, pode ser verde ou roxa.",
+        "3: Fruta vermelha, comumente usada em sucos e vitaminas, com polpa adocicada.",
+        "4: Fruta doce e pequena que cresce em cachos, lembrando pequenas maçãs."
       ]
     }
   ];
-
+  
   function getNumbers(puzzleData) {
     if (currentPuzzle.clueNumbers) return currentPuzzle.clueNumbers;
     return computeNumbers(puzzleData);
   }
-
+  
   function computeNumbers(puzzleData) {
     const numbers = [];
     let num = 1;
@@ -106,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     return numbers;
   }
-
+  
   function generateGrid() {
     gridContainer.innerHTML = '';
     gridContainer.style.display = "grid";
@@ -129,6 +124,8 @@ document.addEventListener("DOMContentLoaded", function() {
           }
           const input = document.createElement('input');
           input.setAttribute('maxlength', '1');
+          // Removido o atributo readonly para permitir teclado físico
+          // input.setAttribute('readonly', true);
           input.dataset.row = r;
           input.dataset.col = c;
           input.addEventListener('input', function() {
@@ -153,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     loadProgress();
   }
-
+  
   function autoAdvance(row, col) {
     let startCol = col;
     while (startCol > 0 && currentPuzzle.puzzleData[row][startCol - 1] === 1) {
@@ -199,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
   }
-
+  
   function autoRetreat(row, col) {
     if (col - 1 >= 0 && currentPuzzle.puzzleData[row][col - 1] === 1) {
       const prevInp = document.querySelector(`.cell input[data-row="${row}"][data-col="${col - 1}"]`);
@@ -215,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
   }
-
+  
   function handleArrowKeys(e, row, col) {
     let targetRow = row, targetCol = col;
     if (e.key === "ArrowRight") targetCol++;
@@ -229,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const targetInp = document.querySelector(`.cell input[data-row="${targetRow}"][data-col="${targetCol}"]`);
     if (targetInp) targetInp.focus();
   }
-
+  
   function checkHorizontalWord(row) {
     let cells = [];
     for (let c = 0; c < currentPuzzle.puzzleData[row].length; c++) {
@@ -244,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     if (cells.length > 0) verifyHorizontalBlock(cells);
   }
-
+  
   function verifyHorizontalBlock(cells) {
     let complete = true;
     for (const { row, col } of cells) {
@@ -259,11 +256,15 @@ document.addEventListener("DOMContentLoaded", function() {
         const cellDiv = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
         if (cellDiv) cellDiv.classList.add('completed');
       });
-      showMessage("Palavra horizontal completa!");
-      setTimeout(clearMessage, 2000);
+      const elapsed = Math.floor((new Date() - startTime) / 1000);
+      const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const seconds = String(elapsed % 60).padStart(2, '0');
+      showMessage("Parabéns, puzzle completo! Seu tempo: " + minutes + ":" + seconds);
+      clearInterval(timerInterval);
+      setTimeout(clearMessage, 5000);
     }
   }
-
+  
   function checkCompletion() {
     const inputs = document.querySelectorAll('.cell input');
     let allCorrect = true;
@@ -275,19 +276,22 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
     if (allCorrect && inputs.length > 0) {
-      showMessage("Parabéns, puzzle completo!");
+      const elapsed = Math.floor((new Date() - startTime) / 1000);
+      const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const seconds = String(elapsed % 60).padStart(2, '0');
+      showMessage("Parabéns, puzzle completo! Seu tempo: " + minutes + ":" + seconds);
       clearInterval(timerInterval);
     }
   }
-
+  
   function showMessage(msg) {
     messageDiv.textContent = msg;
   }
-
+  
   function clearMessage() {
     messageDiv.textContent = "";
   }
-
+  
   function displayClues() {
     horizontalList.innerHTML = `
       <li>1: Fruta amarela, rica em potássio e favorita dos macacos.</li>
@@ -296,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function() {
       <li>4: Fruta doce e pequena que cresce em cachos, lembrando pequenas maçãs.</li>
     `;
   }
-
+  
   function startTimer() {
     startTime = new Date();
     if (timerInterval) clearInterval(timerInterval);
@@ -307,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function() {
       timerDisplay.textContent = `${minutes}:${seconds}`;
     }, 1000);
   }
-
+  
   function saveProgress() {
     const inputs = document.querySelectorAll('.cell input');
     const progress = {};
@@ -317,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     localStorage.setItem(`puzzle-${currentPuzzle.id}-progress`, JSON.stringify(progress));
   }
-
+  
   function loadProgress() {
     const saved = localStorage.getItem(`puzzle-${currentPuzzle.id}-progress`);
     if (saved) {
@@ -333,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
   }
-
+  
   function createKeyboard() {
     const keys = [
       "A","B","C","D","E","F","G","H","I","J",
@@ -380,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     keyboardContainer.style.display = "block";
   }
-
+  
   function startGame() {
     const selectedIndex = parseInt(puzzleSelect.value);
     currentPuzzle = puzzles[selectedIndex];
@@ -392,9 +396,9 @@ document.addEventListener("DOMContentLoaded", function() {
     startTimer();
     clearMessage();
   }
-
+  
   startGameBtn.addEventListener('click', startGame);
-
+  
   checkAnswersBtn.addEventListener('click', () => {
     const inputs = document.querySelectorAll('.cell input');
     inputs.forEach(inp => {
@@ -408,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     checkCompletion();
   });
-
+  
   clearBtn.addEventListener('click', () => {
     const inputs = document.querySelectorAll('.cell input');
     inputs.forEach(inp => {
@@ -419,7 +423,7 @@ document.addEventListener("DOMContentLoaded", function() {
     saveProgress();
     clearMessage();
   });
-
+  
   instructionsBtn.addEventListener('click', function() {
     modal.style.display = 'block';
     anime({
@@ -430,18 +434,20 @@ document.addEventListener("DOMContentLoaded", function() {
       easing: 'easeOutExpo'
     });
   });
-
+  
   closeModal.addEventListener('click', function() {
     modal.style.display = 'none';
   });
-
+  
   window.addEventListener('click', function(event) {
     if (event.target === modal) modal.style.display = 'none';
   });
-
-  // (Opcional) Para iniciar automaticamente, descomente a linha abaixo:
+  
+  // Para iniciar automaticamente, descomente a linha abaixo:
   // startGame();
 });
+
+
 
 
 

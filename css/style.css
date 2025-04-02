@@ -127,8 +127,9 @@ nav button:hover {
   background: transparent;
   text-transform: uppercase;
   color: #fff;
+  /* Adicionado para evitar o teclado nativo */
+  cursor: pointer;
 }
-
 .cell input:focus {
   outline: none;
   background: #444;
@@ -175,11 +176,9 @@ nav button:hover {
   border: 1px solid #00FFFF;
   border-radius: 5px;
 }
-
 .clues-section ul {
   list-style: none;
 }
-
 .clues-section li {
   padding: 5px;
   border-bottom: 1px solid #444;
@@ -193,7 +192,6 @@ nav button:hover {
   text-align: center;
   display: none;
 }
-
 .key {
   display: inline-block;
   margin: 5px;
@@ -222,7 +220,6 @@ nav button:hover {
   height: 100%;
   background-color: rgba(0,0,0,0.8);
 }
-
 .modal-content {
   background: #222;
   margin: 10% auto;
@@ -234,7 +231,6 @@ nav button:hover {
   text-align: center;
   color: #eee;
 }
-
 .close {
   position: absolute;
   top: 10px;
@@ -301,6 +297,7 @@ footer {
     font-size: 0.6em;
   }
 }
+
 
 
 
